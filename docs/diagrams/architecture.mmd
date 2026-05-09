@@ -1,0 +1,139 @@
+---
+title: Pientuottajat AI — Arkkitehtuuri & Migraatiopolku
+---
+flowchart TB
+
+    %% ══════════════════════════════════════════════════════════════
+    %% VAIHE 1: DEMO (omat kustannukset ~0-5 €/kk)
+    %% ══════════════════════════════════════════════════════════════
+    subgraph DEMO["🟢 VAIHE 1 — DEMO  (henkilökohtainen AWS, ~0–5 €/kk)"]
+        direction TB
+
+        subgraph CH1["Kanavat"]
+            TG[Telegram Bot\n🆓 ilmainen API]
+        end
+
+        subgraph AWS1["AWS Serverless (Free Tier / Pay-per-use)"]
+            APIGW1[API Gateway\n🆓 1M req/kk ilmaiseksi]
+            LBD1[Lambda Webhook\nPython 3.12\n🆓 1M inv/kk ilmaiseksi]
+            LBD_HAIKU[Lambda AI Handler\nBedrock Haiku\n💲 ~0,001$/1k tokens]
+            DDB1[(DynamoDB On-Demand\n🆓 25GB ilmaiseksi\nToimittajaprofiilit\nKeskusteluhistoria)]
+            S3_1[S3 Raportit\n🆓 5GB ilmaiseksi]
+            EVB[EventBridge Scheduler\n🆓 Ilmainen taso\nAjastetut raportit]
+        end
+
+        subgraph MOCK["Mock Data (Demo)"]
+            MOCKDATA[Mock JSON\nToimitukset\nReklamaatiot\nMyynti\nHyllysaatavuus]
+        end
+
+        TG -->|webhook HTTPS| APIGW1
+        APIGW1 --> LBD1
+        LBD1 --> LBD_HAIKU
+        LBD_HAIKU <--> DDB1
+        LBD_HAIKU --> MOCKDATA
+        EVB -->|ajastettu| LBD_HAIKU
+        LBD_HAIKU --> S3_1
+        LBD_HAIKU -->|proaktiivinen viesti| TG
+    end
+
+    %% ══════════════════════════════════════════════════════════════
+    %% VAIHE 2: PILOTTI (asiakaslaskutus alkaa, ~50-300 €/kk)
+    %% ══════════════════════════════════════════════════════════════
+    subgraph PILOTTI["🟡 VAIHE 2 — PILOTTI  (1–3 alueosuuskauppaa, ~50–300 €/kk)"]
+        direction TB
+
+        subgraph CH2["Kanavat"]
+            TG2[Telegram]
+            WA2[WhatsApp Business API\nMeta/Twilio]
+            WEB2[Web Portal\nNext.js + Amplify]
+        end
+
+        subgraph AWS2["AWS — Laajennettu"]
+            APIGW2[API Gateway]
+            LBD2[Lambda Webhook]
+            BEDROCK2[Bedrock Agent\nClaude 3 Haiku/Sonnet]
+            DDB2[(DynamoDB\nMulti-tenant\nTenantID-partitiointi)]
+            SQS2[SQS FIFO\nProaktiiviset hälytykset]
+            S3_2[S3 Raportit & PDF]
+            QB[QuickSight\nRaportointidashboard\nAsiakkaan käyttöön]
+        end
+
+        subgraph INT2["Asiakkaan järjestelmät (oikeat integraatiot)"]
+            KAFKA2[Confluent Kafka\nToimituseventit]
+            SAP2[SAP BTP OData\nKassadata & laskutus]
+        end
+
+        subgraph MON["💰 Monetisointi"]
+            STRIPE[Stripe / AWS Marketplace\nTilaustenhallinta\nFree/Pro/Enterprise]
+            BILLING[Billing Lambda\nKäyttömittaus per toimittaja]
+        end
+
+        TG2 & WA2 & WEB2 --> APIGW2
+        APIGW2 --> LBD2 --> BEDROCK2
+        BEDROCK2 <--> DDB2
+        KAFKA2 -->|consumer| SQS2 --> LBD2
+        BEDROCK2 -->|query| SAP2
+        LBD2 --> S3_2
+        S3_2 --> QB
+        BILLING --> STRIPE
+        DDB2 -.->|usage metrics| BILLING
+    end
+
+    %% ══════════════════════════════════════════════════════════════
+    %% VAIHE 3: TUOTANTO (täysi skaalaus)
+    %% ══════════════════════════════════════════════════════════════
+    subgraph TUOTANTO["🔵 VAIHE 3 — TUOTANTO  (kaikki alueet, white-label)"]
+        direction TB
+
+        subgraph CH3["Kanavat"]
+            TG3[Telegram] 
+            WA3[WhatsApp Business]
+            WEB3[Web Portal\nMulti-tenant SaaS]
+            API3[REST API\nKolmansien osapuolten\nintegraatiot]
+        end
+
+        subgraph AWS3["AWS — Tuotanto (SOK Tech Radar ADOPT)"]
+            CF[CloudFront + WAF]
+            APIGW3[API Gateway]
+            ECS[ECS Fargate\nLong-running agentit\nSOK ADOPT]
+            LBD3[Lambda\nEvent handlers]
+            BEDROCK3[Bedrock Agents\nClaude 3.5 Sonnet\nMulti-agent orchestration]
+            DDB3[(DynamoDB Global Tables\nMulti-region)]
+            AURORA[Aurora Serverless v2\nAnalytiikka & raportointi\nSOK ADOPT]
+            ELASTIC[ElasticSearch\nHaku & suodatus\nSOK ADOPT]
+            SQS3[SQS + SNS\nEvent fanout]
+            S3_3[S3 + Glacier\nLong-term storage]
+            XRAY[X-Ray + Splunk\nObservability\nSOK ADOPT]
+        end
+
+        subgraph INT3["Täydet integraatiot"]
+            KAFKA3[Confluent Kafka\nSOK TRIAL]
+            SNOW[Snowflake Datasharing]
+            SAP3[SAP BTP]
+            LEGACY3[Toimialajärjestelmät]
+        end
+
+        subgraph REPORT["📊 Raportointi & Kyselyt"]
+            QS[QuickSight\nSidosryhmäraportit]
+            SURVEY[Survey Lambda\nToimittajakyselyt\nautomaattinen seuranta]
+            KAUPPA[Kaupan Liitto\nAggregoitu näkymä]
+        end
+
+        CF --> APIGW3
+        TG3 & WA3 & WEB3 & API3 --> CF
+        APIGW3 --> LBD3 & ECS
+        ECS & LBD3 --> BEDROCK3
+        BEDROCK3 <--> DDB3 & ELASTIC
+        KAFKA3 --> SQS3 --> LBD3
+        BEDROCK3 --> SNOW & SAP3 & LEGACY3
+        AURORA --> QS & SURVEY
+        SURVEY -->|kyselyviesti| TG3 & WA3
+        QS --> KAUPPA
+        XRAY -.->|monitoring| ECS & LBD3 & BEDROCK3
+    end
+
+    %% ══════════════════════════════════════════════════════════════
+    %% MIGRAATIOPOLKU
+    %% ══════════════════════════════════════════════════════════════
+    DEMO -->|"Viikko 1-2\nAsiakkaan hyväksyntä\nPilottisopimus"| PILOTTI
+    PILOTTI -->|"Kuukausi 2-6\nToimittajien onboarding\nIntegrointien rakentaminen"| TUOTANTO
