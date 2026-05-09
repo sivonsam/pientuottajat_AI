@@ -15,9 +15,9 @@ export class PientuottajatStack extends cdk.Stack {
     super(scope, id, props);
 
     // ── Secrets ──────────────────────────────────────────────────────────────
-    const botSecret = new secretsmanager.Secret(this, 'BotSecret', {
-      secretName: 'pientuottajat/telegram-bot-token',
-      description: 'Telegram Bot Token',
+    const waSecret = new secretsmanager.Secret(this, 'WaSecret', {
+      secretName: 'pientuottajat/whatsapp-token',
+      description: 'WhatsApp Business API token',
     });
 
     // ── DynamoDB ──────────────────────────────────────────────────────────────
@@ -66,16 +66,17 @@ export class PientuottajatStack extends cdk.Stack {
       environment: {
         DYNAMODB_TABLE_SUPPLIERS: suppliersTable.tableName,
         DYNAMODB_TABLE_CONVERSATIONS: conversationsTable.tableName,
-      // Bedrock
-      BEDROCK_MODEL_ID: 'anthropic.claude-3-haiku-20240307-v1:0', // Haiku = ~10x halvempi kuin Sonnet
-      USE_MOCK_DATA: 'True',
+        WHATSAPP_PHONE_NUMBER_ID: process.env.WHATSAPP_PHONE_NUMBER_ID ?? '',
+        WHATSAPP_VERIFY_TOKEN: process.env.WHATSAPP_VERIFY_TOKEN ?? '',
+        BEDROCK_MODEL_ID: 'anthropic.claude-3-haiku-20240307-v1:0',
+        USE_MOCK_DATA: 'True',
       },
     });
 
     webhookLambda.addToRolePolicy(bedrockPolicy);
     suppliersTable.grantReadWriteData(webhookLambda);
     conversationsTable.grantReadWriteData(webhookLambda);
-    botSecret.grantRead(webhookLambda);
+    waSecret.grantRead(webhookLambda);
 
     // ── Action Groups Lambda (Bedrock → data) ─────────────────────────────────
     const actionGroupsLambda = new lambda.Function(this, 'ActionGroupsHandler', {
@@ -112,7 +113,7 @@ export class PientuottajatStack extends cdk.Stack {
 
     suppliersTable.grantReadData(notifierLambda);
     notifierLambda.addEventSource(new SqsEventSource(notificationQueue, { batchSize: 10 }));
-    botSecret.grantRead(notifierLambda);
+    waSecret.grantRead(notifierLambda);
 
     // ── EventBridge Scheduler — Kuukausiraportti (ilmainen taso, korvaa Step Functions demossa) ──
     const schedulerRole = new iam.Role(this, 'SchedulerRole', {
@@ -138,8 +139,9 @@ export class PientuottajatStack extends cdk.Stack {
     });
 
     const webhook = api.root.addResource('webhook');
-    const telegramWebhook = webhook.addResource('telegram');
-    telegramWebhook.addMethod('POST', new apigateway.LambdaIntegration(webhookLambda));
+    const telegramWebhook = webhook.addResource('whatsapp');
+    telegramWebhook.addMethod('GET', new apigateway.LambdaIntegration(webhookLambda));  // Meta verify
+    telegramWebhook.addMethod('POST', new apigateway.LambdaIntegration(webhookLambda)); // Saapuvat viestit
 
     // ── Outputs ──────────────────────────────────────────────────────────────
     new cdk.CfnOutput(this, 'ApiUrl', {
@@ -147,9 +149,9 @@ export class PientuottajatStack extends cdk.Stack {
       description: 'API Gateway URL — aseta tämä Telegram webhook-osoitteeksi',
     });
 
-    new cdk.CfnOutput(this, 'TelegramWebhookUrl', {
-      value: `${api.url}webhook/telegram`,
-      description: 'Telegram webhook URL',
+    new cdk.CfnOutput(this, 'WhatsAppWebhookUrl', {
+      value: `${api.url}webhook/whatsapp`,
+      description: 'Aseta tama Meta Business -konsoliin: WhatsApp -> Configuration -> Webhook Callback URL',
     });
 
     new cdk.CfnOutput(this, 'NotificationQueueUrl', {

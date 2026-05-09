@@ -2,30 +2,139 @@ import os
 import json
 import boto3
 import logging
-from telegram import Update, Bot
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+import urllib.request
+import urllib.error
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-TELEGRAM_BOT_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
-BEDROCK_AGENT_ID = os.environ["BEDROCK_AGENT_ID"]
-BEDROCK_AGENT_ALIAS_ID = os.environ["BEDROCK_AGENT_ALIAS_ID"]
+WHATSAPP_TOKEN = os.environ["WHATSAPP_TOKEN"]
+WHATSAPP_PHONE_NUMBER_ID = os.environ["WHATSAPP_PHONE_NUMBER_ID"]
+WHATSAPP_VERIFY_TOKEN = os.environ["WHATSAPP_VERIFY_TOKEN"]
+BEDROCK_MODEL_ID = os.environ.get("BEDROCK_MODEL_ID", "anthropic.claude-3-haiku-20240307-v1:0")
 
-bedrock_agent_runtime = boto3.client("bedrock-agent-runtime", region_name=os.environ.get("AWS_REGION", "eu-west-1"))
+bedrock = boto3.client("bedrock-runtime", region_name=os.environ.get("AWS_REGION", "eu-west-1"))
 dynamodb = boto3.resource("dynamodb", region_name=os.environ.get("AWS_REGION", "eu-west-1"))
 suppliers_table = dynamodb.Table(os.environ.get("DYNAMODB_TABLE_SUPPLIERS", "pientuottajat-suppliers"))
+conversations_table = dynamodb.Table(os.environ.get("DYNAMODB_TABLE_CONVERSATIONS", "pientuottajat-conversations"))
+
+SYSTEM_PROMPT = """Olet pientuottaja-assistentti joka auttaa suomalaisia pieniä elintarviketoimittajia seuraamaan
+toimituksiaan, laskutustaan, reklamaatioitaan ja hyllysaatavuuttaan alueosuuskaupoissa.
+
+Olet ystävällinen, selkeä ja proaktiivinen. Käytä aina suomea. Vastaa lyhyesti ja selkeästi.
+Älä käytä markdown-muotoilua (ei *, #, **) — WhatsApp näyttää tekstin sellaisenaan.
+
+Voit hakea toimittajan: toimitukset, reklamaatiot, myyntidata alueosuuskaupoittain, hyllysaatavuuden.
+Voit myös päivittää hänen hälytyspreferenssinsä."""
+
+USE_MOCK_DATA = os.environ.get("USE_MOCK_DATA", "True") == "True"
 
 
-def get_or_create_supplier(telegram_user_id: str, username: str) -> dict:
-    """Hae tai luo toimittajaprofiili DynamoDB:stä."""
-    response = suppliers_table.get_item(Key={"supplier_id": f"tg_{telegram_user_id}"})
-    if "Item" not in response:
+def get_mock_context() -> str:
+    return """
+TOIMITTAJAN TIEDOT (demo-data):
+Viimeisimmät toimitukset:
+- DEL-001: 7.5.2026, Prisma Tikkurila, Vastaanotettu, 24 kpl, 312,50 e
+- DEL-002: 5.5.2026, S-market Kerava, REKLAMAATIO, 12 kpl, 156,00 e
+- DEL-003: 2.5.2026, Prisma Tikkurila, Laskutettu, 30 kpl, 390,00 e
+
+Avoimet reklamaatiot:
+- REC-042: Toimitus DEL-002, S-market Kerava, Syy: Pakkausvaurio 3 kpl, Avoin, maaraika 13.5.2026
+
+Myynti toukokuu 2026:
+- Prisma Tikkurila: 156 kpl, 2028 e
+- S-market Kerava: 89 kpl, 1157 e
+- Sale Jarvenpaaa: 34 kpl, 442 e
+- Yhteensa: 3627 e
+
+Hyllysaatavuus:
+- Sale Jarvenpaaa / Luomuhillot 400g: KRIITTINEN, tayttaste 15%
+- Prisma Tikkurila: OK
+- S-market Kerava: OK
+"""
+
+
+def get_conversation_history(session_id: str) -> list:
+    try:
+        resp = conversations_table.get_item(Key={"session_id": session_id})
+        return resp.get("Item", {}).get("messages", [])
+    except Exception:
+        return []
+
+
+def save_conversation_history(session_id: str, messages: list):
+    import time
+    try:
+        conversations_table.put_item(Item={
+            "session_id": session_id,
+            "messages": messages[-20:],
+            "ttl": int(time.time()) + 86400 * 7,
+        })
+    except Exception as e:
+        logger.warning(f"Conversation save failed: {e}")
+
+
+def invoke_bedrock(session_id: str, user_message: str) -> str:
+    history = get_conversation_history(session_id)
+    context = get_mock_context() if USE_MOCK_DATA else ""
+
+    user_content = f"{user_message}\n\n[Jarjestelma data]\n{context}" if context else user_message
+    messages = history + [{"role": "user", "content": user_content}]
+
+    body = {
+        "anthropic_version": "bedrock-2023-05-31",
+        "max_tokens": 512,
+        "system": SYSTEM_PROMPT,
+        "messages": messages,
+    }
+
+    try:
+        response = bedrock.invoke_model(
+            modelId=BEDROCK_MODEL_ID,
+            body=json.dumps(body),
+            contentType="application/json",
+            accept="application/json",
+        )
+        result = json.loads(response["body"].read())
+        reply = result["content"][0]["text"]
+
+        history.append({"role": "user", "content": user_message})
+        history.append({"role": "assistant", "content": reply})
+        save_conversation_history(session_id, history)
+        return reply
+    except Exception as e:
+        logger.error(f"Bedrock error: {e}")
+        return "Tekninen ongelma. Yrita hetken kuluttua uudelleen."
+
+
+def send_whatsapp_message(to: str, text: str):
+    url = f"https://graph.facebook.com/v20.0/{WHATSAPP_PHONE_NUMBER_ID}/messages"
+    payload = json.dumps({
+        "messaging_product": "whatsapp",
+        "to": to,
+        "type": "text",
+        "text": {"body": text},
+    }).encode()
+    req = urllib.request.Request(
+        url, data=payload,
+        headers={"Authorization": f"Bearer {WHATSAPP_TOKEN}", "Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        urllib.request.urlopen(req, timeout=10)
+    except urllib.error.HTTPError as e:
+        logger.error(f"WhatsApp send error {e.code}: {e.read().decode()}")
+
+
+def get_or_create_supplier(wa_number: str, display_name: str) -> dict:
+    supplier_id = f"wa_{wa_number}"
+    resp = suppliers_table.get_item(Key={"supplier_id": supplier_id})
+    if "Item" not in resp:
         item = {
-            "supplier_id": f"tg_{telegram_user_id}",
-            "channel": "telegram",
-            "channel_user_id": telegram_user_id,
-            "username": username,
+            "supplier_id": supplier_id,
+            "channel": "whatsapp",
+            "channel_user_id": wa_number,
+            "display_name": display_name,
             "preferences": {
                 "monthly_report_day": 1,
                 "alert_on_reclamation": True,
@@ -34,68 +143,54 @@ def get_or_create_supplier(telegram_user_id: str, username: str) -> dict:
         }
         suppliers_table.put_item(Item=item)
         return item
-    return response["Item"]
-
-
-def invoke_bedrock_agent(supplier_id: str, session_id: str, message: str) -> str:
-    """Lähetä viesti Bedrock Agentille ja palauta vastaus."""
-    try:
-        response = bedrock_agent_runtime.invoke_agent(
-            agentId=BEDROCK_AGENT_ID,
-            agentAliasId=BEDROCK_AGENT_ALIAS_ID,
-            sessionId=session_id,
-            inputText=message,
-            sessionState={
-                "sessionAttributes": {"supplier_id": supplier_id},
-            },
-        )
-        completion = ""
-        for event in response.get("completion", []):
-            chunk = event.get("chunk", {})
-            if "bytes" in chunk:
-                completion += chunk["bytes"].decode("utf-8")
-        return completion or "Pahoittelen, en saanut vastausta. Yritä hetken kuluttua uudelleen."
-    except Exception as e:
-        logger.error(f"Bedrock Agent error: {e}")
-        return "Tekninen ongelma. Ota yhteyttä tukeen."
+    return resp["Item"]
 
 
 def lambda_handler(event: dict, context) -> dict:
-    """Lambda entry point — käsittelee Telegram webhook -kutsut."""
     logger.info(f"Event: {json.dumps(event)}")
 
+    # WhatsApp webhook-vahvistus (GET — Meta kutsuu tata kerran setupissa)
+    params = event.get("queryStringParameters") or {}
+    if params.get("hub.mode") == "subscribe":
+        if params.get("hub.verify_token") == WHATSAPP_VERIFY_TOKEN:
+            return {"statusCode": 200, "body": params.get("hub.challenge", "")}
+        return {"statusCode": 403, "body": "Forbidden"}
+
+    # Saapuva viesti (POST)
     body = json.loads(event.get("body", "{}"))
-    if "message" not in body:
+    entry = body.get("entry", [{}])[0]
+    changes = entry.get("changes", [{}])[0]
+    value = changes.get("value", {})
+    messages = value.get("messages", [])
+
+    if not messages:
         return {"statusCode": 200, "body": "ok"}
 
-    message = body["message"]
-    chat_id = str(message["chat"]["id"])
-    user = message.get("from", {})
-    user_id = str(user.get("id", chat_id))
-    username = user.get("username", user.get("first_name", "Toimittaja"))
-    text = message.get("text", "")
+    msg = messages[0]
+    if msg.get("type") != "text":
+        return {"statusCode": 200, "body": "ok"}
 
-    supplier = get_or_create_supplier(user_id, username)
-    session_id = f"tg-{chat_id}-session"
+    wa_number = msg["from"]
+    text = msg["text"]["body"]
+    contacts = value.get("contacts", [{}])
+    display_name = contacts[0].get("profile", {}).get("name", wa_number)
 
-    if text.startswith("/start"):
+    supplier = get_or_create_supplier(wa_number, display_name)
+    session_id = f"wa-{wa_number}-session"
+
+    if text.strip().lower() in ["hei", "moi", "aloita", "start"]:
         reply = (
-            f"👋 Hei {username}! Olen pientuottaja-assistenttisi.\n\n"
-            "Voit kysyä minulta esimerkiksi:\n"
-            "• Viimeisimmät toimitukseni\n"
-            "• Avoimet reklamaatiot\n"
-            "• Kuukauden myynti alueosuuskaupoittain\n"
-            "• Hyllysaatavuustilanne\n\n"
-            "Voit myös asettaa automaattihälytyksiä, esim:\n"
-            "_\"Hälytä minulle aina kun toimituksissani on poikkeama\"_"
+            f"Hei {display_name}! Olen pientuottaja-assistenttisi.\n\n"
+            "Voit kysyä minulta:\n"
+            "- Viimeisimmät toimitukseni\n"
+            "- Avoimet reklamaatiot\n"
+            "- Kuukauden myynti myymalakohtaisesti\n"
+            "- Hyllysaatavuustilanne\n\n"
+            "Voit myos pyytaa automaattisia halytyksia, esim:\n"
+            "\"Halyta minulle aina reklamaatioista\""
         )
     else:
-        reply = invoke_bedrock_agent(supplier["supplier_id"], session_id, text)
+        reply = invoke_bedrock(session_id, text)
 
-    bot = Bot(token=TELEGRAM_BOT_TOKEN)
-    import asyncio
-    asyncio.get_event_loop().run_until_complete(
-        bot.send_message(chat_id=chat_id, text=reply, parse_mode="Markdown")
-    )
-
+    send_whatsapp_message(wa_number, reply)
     return {"statusCode": 200, "body": "ok"}
