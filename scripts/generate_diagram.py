@@ -1,183 +1,207 @@
-"""Generoi Pientuottajat AI arkkitehtuurikaavio PNG-muodossa."""
+"""Generoi Pientuottajat AI arkkitehtuurikaavio — agenttinen versio."""
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
+from matplotlib.patches import FancyBboxPatch
 
-fig, ax = plt.subplots(figsize=(22, 14))
-ax.set_xlim(0, 22)
-ax.set_ylim(0, 14)
+fig, ax = plt.subplots(figsize=(24, 15))
+ax.set_xlim(0, 24)
+ax.set_ylim(0, 15)
 ax.axis("off")
-fig.patch.set_facecolor("#F8F9FA")
+fig.patch.set_facecolor("#F0F4F8")
 
-# ── Värit ───────────────────────────────────────────────────────────────────
-C_DEMO   = "#2E7D32"   # tumma vihreä
-C_PILOTTI= "#E65100"   # oranssi
-C_TUOT   = "#1565C0"   # tumma sininen
-C_WA     = "#25D366"   # WhatsApp vihreä
-C_AWS    = "#FF9900"   # AWS oranssi
-C_ARROW  = "#546E7A"
-C_BG_D   = "#E8F5E9"
-C_BG_P   = "#FFF3E0"
-C_BG_T   = "#E3F2FD"
-C_BOX    = "#FFFFFF"
+C_SUPPLIER = "#1B5E20"
+C_CUSTOMER = "#0D47A1"
+C_AGENT    = "#E65100"
+C_AWS      = "#FF9900"
+C_WA       = "#25D366"
+C_SAP      = "#1976D2"
+C_DATA     = "#4A148C"
+C_EVENT    = "#880E4F"
+C_BG_S     = "#E8F5E9"
+C_BG_C     = "#E3F2FD"
+C_BG_A     = "#FFF3E0"
+C_BG_D     = "#F3E5F5"
+WHITE      = "#FFFFFF"
 
-def box(ax, x, y, w, h, label, sublabel="", bg=C_BOX, border="#90A4AE", fontsize=8.5):
-    rect = FancyBboxPatch((x, y), w, h,
-        boxstyle="round,pad=0.08", linewidth=1.2,
-        edgecolor=border, facecolor=bg, zorder=3)
+def box(ax, x, y, w, h, label, sub="", bg=WHITE, border="#90A4AE", fs=8.5, bold=True):
+    rect = FancyBboxPatch((x,y), w, h, boxstyle="round,pad=0.1",
+        linewidth=1.5, edgecolor=border, facecolor=bg, zorder=3)
     ax.add_patch(rect)
-    if sublabel:
-        ax.text(x+w/2, y+h*0.62, label, ha="center", va="center",
-                fontsize=fontsize, fontweight="bold", zorder=4, color="#212121")
-        ax.text(x+w/2, y+h*0.25, sublabel, ha="center", va="center",
-                fontsize=7, zorder=4, color="#546E7A")
+    fw = "bold" if bold else "normal"
+    if sub:
+        ax.text(x+w/2, y+h*0.63, label, ha="center", va="center", fontsize=fs, fontweight=fw, zorder=4, color="#1A1A1A")
+        ax.text(x+w/2, y+h*0.25, sub,   ha="center", va="center", fontsize=6.8, zorder=4, color="#546E7A")
     else:
-        ax.text(x+w/2, y+h/2, label, ha="center", va="center",
-                fontsize=fontsize, fontweight="bold", zorder=4, color="#212121")
+        ax.text(x+w/2, y+h/2,    label, ha="center", va="center", fontsize=fs, fontweight=fw, zorder=4, color="#1A1A1A")
 
-def cluster(ax, x, y, w, h, title, color, bg):
-    rect = FancyBboxPatch((x, y), w, h,
-        boxstyle="round,pad=0.15", linewidth=2,
-        edgecolor=color, facecolor=bg, zorder=1, alpha=0.5)
+def cluster(ax, x, y, w, h, title, color, bg, alpha=0.35):
+    rect = FancyBboxPatch((x,y), w, h, boxstyle="round,pad=0.2",
+        linewidth=2.2, edgecolor=color, facecolor=bg, zorder=1, alpha=alpha)
     ax.add_patch(rect)
-    ax.text(x+0.15, y+h-0.02, title, ha="left", va="top",
-            fontsize=10, fontweight="bold", color=color, zorder=2)
+    ax.text(x+0.18, y+h-0.05, title, ha="left", va="top",
+            fontsize=9.5, fontweight="bold", color=color, zorder=2)
 
-def arrow(ax, x1, y1, x2, y2, color=C_ARROW, style="->", lw=1.5, label=""):
-    ax.annotate("", xy=(x2, y2), xytext=(x1, y1),
+def arr(ax, x1, y1, x2, y2, color="#546E7A", lw=1.6, label="", rad=0.0, style="->"):
+    ax.annotate("", xy=(x2,y2), xytext=(x1,y1),
         arrowprops=dict(arrowstyle=style, color=color, lw=lw,
-                        connectionstyle="arc3,rad=0.0"))
+                        connectionstyle=f"arc3,rad={rad}"))
     if label:
-        mx, my = (x1+x2)/2, (y1+y2)/2
-        ax.text(mx+0.1, my, label, fontsize=6.5, color=color, va="center")
+        ax.text((x1+x2)/2+0.05, (y1+y2)/2+0.15, label,
+                fontsize=6.5, color=color, ha="center",
+                bbox=dict(facecolor="white", edgecolor="none", alpha=0.7, pad=1))
 
-def migration_arrow(ax, x1, y1, x2, y2, label, color):
-    ax.annotate("", xy=(x2, y2), xytext=(x1, y1),
-        arrowprops=dict(arrowstyle="-|>", color=color, lw=2.5,
+def darr(ax, x1,y1,x2,y2, color, label=""):
+    ax.annotate("", xy=(x2,y2), xytext=(x1,y1),
+        arrowprops=dict(arrowstyle="-|>", color=color, lw=2.2,
                         linestyle="dashed", connectionstyle="arc3,rad=0.0"))
-    ax.text((x1+x2)/2, (y1+y2)/2+0.2, label, ha="center",
-            fontsize=8, fontweight="bold", color=color,
-            bbox=dict(boxstyle="round,pad=0.2", facecolor="white", edgecolor=color, alpha=0.9))
+    if label:
+        ax.text((x1+x2)/2, (y1+y2)/2+0.25, label, ha="center",
+                fontsize=8, fontweight="bold", color=color,
+                bbox=dict(boxstyle="round,pad=0.25", facecolor="white", edgecolor=color, alpha=0.92))
 
 # ═══════════════════════════════════════════════════════════════════════════
 # OTSIKKO
 # ═══════════════════════════════════════════════════════════════════════════
-ax.text(11, 13.5, "Pientuottajat AI — Arkkitehtuuri & Migraatiopolku",
-        ha="center", va="top", fontsize=16, fontweight="bold", color="#212121")
-ax.text(11, 13.1, "SOK Tech Radar -linjattu   |   AWS   |   WhatsApp Business API   |   Amazon Bedrock",
+ax.text(12, 14.6, "Pientuottajat AI — Agenttinen arkkitehtuuri", ha="center", va="top",
+        fontsize=17, fontweight="bold", color="#1A1A1A")
+ax.text(12, 14.15,"Kaksisuuntainen: toimittaja chattaa agentin kanssa  |  kauppa laahettaa kyselyitä & muistutuksia proaktiivisesti",
         ha="center", va="top", fontsize=9, color="#546E7A")
 
 # ═══════════════════════════════════════════════════════════════════════════
-# VAIHE 1: DEMO
+# VASEN: TOIMITTAJAN PUOLI
 # ═══════════════════════════════════════════════════════════════════════════
-cluster(ax, 0.3, 5.5, 6.8, 7.0, "VAIHE 1 — DEMO  (~0–5 €/kk, oma luottokortti)", C_DEMO, C_BG_D)
+cluster(ax, 0.2, 3.2, 5.0, 10.5, "TOIMITTAJAN PUOLI (pientoimittaja)", C_SUPPLIER, C_BG_S)
 
-# Toimittaja
-box(ax, 0.6, 11.2, 2.0, 0.9, "Pientoimittaja", "eri IT-taidot", bg="#E8EAF6", border="#3949AB")
-# WhatsApp
-box(ax, 0.6, 9.9, 2.0, 0.9, "WhatsApp", "Business Cloud API", bg=C_WA, border="#1B9448", fontsize=8)
-# API Gateway
-box(ax, 3.2, 9.9, 1.8, 0.9, "API Gateway", "1M req/kk\nilmaiseksi", bg=C_BOX, border=C_AWS)
-# Webhook Lambda
-box(ax, 3.2, 8.6, 1.8, 0.9, "Lambda\nWebhook", "Python 3.12", bg=C_BOX, border=C_AWS)
-# Bedrock Haiku
-box(ax, 3.2, 7.3, 1.8, 0.9, "Bedrock\nClaude Haiku", "~$0.001/viesti\n10x halvempi", bg="#FFF8E1", border="#F57F17")
-# DynamoDB
-box(ax, 0.6, 7.3, 2.0, 0.9, "DynamoDB", "Profiilit\nKeskusteluhistoria\n(25 GB ilm.)", bg=C_BOX, border=C_AWS)
-# EventBridge
-box(ax, 0.6, 6.0, 2.0, 0.9, "EventBridge\nScheduler", "Kuukausiraportti\nilmainen taso", bg=C_BOX, border=C_AWS)
-# Notifier Lambda
-box(ax, 3.2, 6.0, 1.8, 0.9, "Lambda\nNotifier", "Proaktiiviset\nhälytykset", bg=C_BOX, border=C_AWS)
-# S3
-box(ax, 3.2, 5.7, 1.8, 0.7, "S3 Raportit", "5 GB ilmaiseksi", bg=C_BOX, border=C_AWS, fontsize=7.5)
+box(ax, 0.5,12.0,4.4,1.1,"Pientoimittaja","Eri IT-tasot, pk-yritys",bg="#C8E6C9",border=C_SUPPLIER,fs=10)
+box(ax, 0.5,10.5,4.4,1.1,"WhatsApp Business","Tuttu kanava — ei uutta appia",bg=C_WA,border="#1B9448",fs=9.5)
+box(ax, 0.5, 8.8,4.4,0.95,"Kysy toimituksistasi","\"Mika on DEL-002 tilanne?\"",bg=WHITE,border=C_SUPPLIER,fs=8.5,bold=False)
+box(ax, 0.5, 7.7,4.4,0.95,"Kirjaa reklamaatio","\"Kirjaa reklamaatio DEL-002\"",bg=WHITE,border=C_SUPPLIER,fs=8.5,bold=False)
+box(ax, 0.5, 6.6,4.4,0.95,"Kysy tilitystasi","\"Paljonko tilitysta on tulossa?\"",bg=WHITE,border=C_SUPPLIER,fs=8.5,bold=False)
+box(ax, 0.5, 5.5,4.4,0.95,"Aseta halytykset","\"Halyta aina reklamaatioista\"",bg=WHITE,border=C_SUPPLIER,fs=8.5,bold=False)
+box(ax, 0.5, 4.4,4.4,0.95,"Vastaa kyselyihin","\"Kylla, voin toimittaa enemman\"",bg=WHITE,border=C_SUPPLIER,fs=8.5,bold=False)
+box(ax, 0.5, 3.4,4.4,0.75,"Vastaanota proaktiiviset ilmoitukset","Reklamaatiot, hyllypuutteet, erapaivat",bg="#F1F8E9",border=C_SUPPLIER,fs=7.5)
 
-# Yhteydet demo
-arrow(ax, 1.6, 11.2, 1.6, 10.8)          # toimittaja → WA
-arrow(ax, 2.6, 10.35, 3.2, 10.35)        # WA → APIgw
-arrow(ax, 4.1, 9.9, 4.1, 9.5)            # apigw → webhook
-arrow(ax, 4.1, 8.6, 4.1, 8.2)            # webhook → bedrock
-arrow(ax, 3.2, 7.75, 2.6, 7.75)          # bedrock → DDB
-arrow(ax, 1.6, 9.9, 1.6, 8.2, label="")  # WA ← notifier (proaktiivinen)
-arrow(ax, 3.2, 6.45, 2.6, 6.45)          # notifier ← EventBridge
-arrow(ax, 0.6+1.0, 6.0, 3.2, 6.45, color=C_DEMO)  # EB → notifier
-arrow(ax, 4.1, 6.0, 4.1, 5.7)            # notifier → S3
+arr(ax, 2.7,12.0,2.7,11.6, C_SUPPLIER)
+arr(ax, 2.7,10.5,2.7,9.75, C_SUPPLIER)
+arr(ax, 4.94,10.0,5.5,10.0, C_SUPPLIER, label="HTTPS Webhook")
 
 # ═══════════════════════════════════════════════════════════════════════════
-# VAIHE 2: PILOTTI
+# KESKIOSA: BEDROCK AGENT (AI-ydin)
 # ═══════════════════════════════════════════════════════════════════════════
-cluster(ax, 7.5, 5.5, 7.0, 7.0, "VAIHE 2 — PILOTTI  (~50–300 €/kk, 1–3 alueosuuskauppaa)", C_PILOTTI, C_BG_P)
+cluster(ax, 5.4, 2.0, 8.0, 12.0, "AWS — AGENTTINEN AI-YDIN", C_AGENT, C_BG_A)
 
-box(ax, 7.8, 11.2, 2.2, 0.9, "WhatsApp +\nWeb Portal", "Next.js (SOK ADOPT)", bg=C_BOX, border=C_PILOTTI)
-box(ax, 10.4, 11.2, 1.8, 0.9, "API Gateway", "+WAF", bg=C_BOX, border=C_AWS)
-box(ax, 10.4, 9.9, 1.8, 0.9, "Lambda\nWebhook", "Python", bg=C_BOX, border=C_AWS)
-box(ax, 10.4, 8.6, 1.8, 0.9, "Bedrock Agent\nClaude Sonnet", "Action Groups", bg="#FFF8E1", border="#F57F17")
-box(ax, 7.8, 9.9, 2.0, 0.9, "DynamoDB\nMulti-tenant", "tenant_id\npartition", bg=C_BOX, border=C_AWS)
-box(ax, 7.8, 8.6, 2.0, 0.9, "Confluent Kafka", "Toimituseventit\nReklamaatiot\n(SOK TRIAL)", bg=C_BOX, border=C_PILOTTI)
-box(ax, 7.8, 7.3, 2.0, 0.9, "SQS FIFO", "Hälytysjono\n(SOK ADOPT)", bg=C_BOX, border=C_AWS)
-box(ax, 10.4, 7.3, 1.8, 0.9, "SAP BTP\nOData", "Kassadata\nLaskutus", bg=C_BOX, border="#7B1FA2")
-box(ax, 7.8, 6.0, 2.0, 0.9, "Monetisointi", "Free / Pro 49€/kk\n/ Enterprise", bg="#FCE4EC", border="#C62828")
-box(ax, 10.4, 6.0, 1.8, 0.9, "QuickSight\nRaportit", "Toimittajat\n+ Kauppa", bg=C_BOX, border=C_AWS)
+box(ax, 5.7,12.4, 2.0,1.0,"API Gateway","GET+POST\n/webhook/whatsapp",bg=WHITE,border=C_AWS)
+box(ax, 8.1,12.4, 2.0,1.0,"Lambda\nWebhook","Python 3.12",bg=WHITE,border=C_AWS)
 
-arrow(ax, 9.0, 11.65, 10.4, 11.65)
-arrow(ax, 11.3, 11.2, 11.3, 10.8)
-arrow(ax, 11.3, 9.9, 11.3, 9.5)
-arrow(ax, 10.4, 9.05, 9.8, 9.05)
-arrow(ax, 8.8, 8.6, 8.8, 8.2)
-arrow(ax, 8.8, 7.3, 8.8, 6.9)
-arrow(ax, 10.4, 7.75, 9.8, 7.75)
-arrow(ax, 11.3, 7.3, 11.3, 6.9)
+# Bedrock Agent — paikka
+box(ax, 5.7,10.2, 4.4,1.8,"Amazon Bedrock Agent\n(Claude 3 Haiku)",
+    "Ymmaartaa kontekstin, paattaa itse mitka\ntoiminnot kutsutaan (tool-use), pitaa muistin",
+    bg="#FFE0B2",border=C_AGENT,fs=9.5)
 
-# ═══════════════════════════════════════════════════════════════════════════
-# VAIHE 3: TUOTANTO
-# ═══════════════════════════════════════════════════════════════════════════
-cluster(ax, 14.9, 5.5, 6.8, 7.0, "VAIHE 3 — TUOTANTO  (SOK Tech Radar ADOPT, kaikki alueet)", C_TUOT, C_BG_T)
+# Action Groups
+box(ax, 5.7,8.4, 2.0,1.5,"Action Groups",
+    "getDeliveries\ngetSettlements\ngetReclamations\nsubmitReclamation\nrespondToReclamation\ngetShelfAvailability\nupdateAlertPreferences\ngetSurveyQuestions\nsubmitSurveyResponse",
+    bg=WHITE,border=C_AGENT,fs=7.0)
+box(ax, 8.1,8.4, 2.0,1.5,"Lambda\nAction Handler","Python\nMock → oikeat\nintegraatiot",bg=WHITE,border=C_AWS,fs=8)
 
-box(ax, 15.2, 11.2, 2.2, 0.9, "WhatsApp + Web\n+ API (3rd party)", "Multi-channel", bg=C_BOX, border=C_TUOT)
-box(ax, 17.8, 11.2, 1.8, 0.9, "CloudFront\n+ WAF", "SOK ADOPT", bg=C_BOX, border=C_AWS)
-box(ax, 17.8, 9.9, 1.8, 0.9, "ECS Fargate\nAgentit", "Long-running\nSOK ADOPT", bg=C_BOX, border=C_AWS)
-box(ax, 15.2, 9.9, 2.2, 0.9, "Multi-Agent\nBedrock Orchestration", "Claude 3.5 Sonnet", bg="#FFF8E1", border="#F57F17")
-box(ax, 15.2, 8.6, 2.2, 0.9, "Confluent Kafka\n+ Snowflake", "SOK TRIAL\nDatasharing", bg=C_BOX, border=C_TUOT)
-box(ax, 17.8, 8.6, 1.8, 0.9, "Aurora\nServerless v2", "Analytiikka\nSOK ADOPT", bg=C_BOX, border=C_AWS)
-box(ax, 15.2, 7.3, 2.2, 0.9, "ElasticSearch", "Haku & suodatus\nSOK ADOPT", bg=C_BOX, border=C_AWS)
-box(ax, 17.8, 7.3, 1.8, 0.9, "X-Ray + Splunk", "Observability\nSOK ADOPT", bg=C_BOX, border=C_AWS)
-box(ax, 15.2, 6.0, 2.2, 0.9, "QuickSight\n+ Survey Lambda", "Kaupan Liitto\nnäkymä + kyselyt", bg=C_BOX, border=C_TUOT)
-box(ax, 17.8, 6.0, 1.8, 0.9, "Stripe /\nAWS Marketplace", "SaaS-laskutus\nMonetised", bg="#FCE4EC", border="#C62828")
+box(ax, 5.7,6.5, 2.0,1.5,"DynamoDB","Toimittajaprofiilit\nKeskusteluhistoria (TTL)\nHalytysasetukset\n(25 GB Free Tier)",bg=WHITE,border=C_DATA,fs=7.5)
+box(ax, 8.1,6.5, 2.0,1.5,"SQS\nEvent Queue","Asynk. eventit\npientuottajat-events\n(Free Tier)",bg=WHITE,border=C_AWS,fs=7.5)
 
-arrow(ax, 17.4, 11.65, 17.8, 11.65)
-arrow(ax, 18.7, 11.2, 18.7, 10.8)
-arrow(ax, 17.8, 10.35, 17.4, 10.35)
-arrow(ax, 16.3, 9.9, 16.3, 9.5)
-arrow(ax, 17.4, 9.05, 17.8, 9.05)
-arrow(ax, 16.3, 8.6, 16.3, 8.2)
-arrow(ax, 18.7, 8.6, 18.7, 8.2)
+box(ax, 5.7,4.5, 2.0,1.6,"Event Processor\nLambda","Reklamaatiot\nHyllypuutteet\nErapaivat\nMitkä toimittajat?",bg=WHITE,border=C_EVENT,fs=7.5)
+box(ax, 8.1,4.5, 2.0,1.6,"EventBridge\nScheduler","Kuukausiraportti\n1. pv klo 8:00\nKaikille toimittajille\n(ilmainen taso)",bg=WHITE,border=C_AWS,fs=7.5)
+
+box(ax, 5.7,2.5, 2.0,1.6,"Surveys Table\nDynamoDB","Kaupan kyselyt\nVastaukset\nYhteenvedot",bg=WHITE,border=C_DATA,fs=7.5)
+box(ax, 8.1,2.5, 2.0,1.6,"S3\nRaportit","PDF-raportit\nKuukausiyhteevedot\nKaupan Liitto",bg=WHITE,border=C_AWS,fs=7.5)
+
+# Nuolet agent-osassa
+arr(ax, 7.7,12.9, 8.1,12.9, C_AWS)
+arr(ax, 9.1,12.4, 9.1,11.6, label="invoke_agent\ntai InvokeModel",color=C_AGENT)
+arr(ax, 5.7+2.2,10.2, 5.7+2.2,9.9, C_AGENT, label="tool-use")
+arr(ax, 7.7,9.15, 8.1,9.15, C_AGENT)
+arr(ax, 6.7,8.4, 6.7,8.0, C_DATA)
+arr(ax, 9.1,8.4, 9.1,8.0, C_AWS)
+arr(ax, 9.1,6.5, 9.1,6.1, C_EVENT)
+arr(ax, 8.1,5.25, 7.7,5.25, C_EVENT)
+arr(ax, 8.1+1.0,4.5, 8.1+1.0,4.1, C_AWS)
 
 # ═══════════════════════════════════════════════════════════════════════════
-# MIGRAATIOPILIA
+# OIKEA: KAUPAN PUOLI
 # ═══════════════════════════════════════════════════════════════════════════
-migration_arrow(ax, 7.1, 9.0, 7.5, 9.0, "Viikko 1–2\nAsiakkaan hyväksyntä\n→ Pilotti", C_PILOTTI)
-migration_arrow(ax, 14.5, 9.0, 14.9, 9.0, "Kk 2–6\nToimittajien\nonboarding → Tuotanto", C_TUOT)
+cluster(ax, 13.6, 3.2, 5.0, 10.5, "KAUPAN PUOLI (alueosuuskauppa)", C_CUSTOMER, C_BG_C)
+
+box(ax, 13.9,12.0,4.4,1.1,"Kaupan henkilosto","Ostaja, hankintapaallikkoo,\nalueosuuskaupan johto",bg="#BBDEFB",border=C_CUSTOMER,fs=9.5)
+box(ax, 13.9,10.5,4.4,1.1,"Customer Ops API","/customer/* + API Key\nAWS API Gateway",bg=WHITE,border=C_AWS,fs=8.5)
+box(ax, 13.9, 8.8,4.4,0.95,"Laata kysely","\"Pystytkö toimittamaan\nenemmän heinäkuussa?\"",bg=WHITE,border=C_CUSTOMER,fs=8,bold=False)
+box(ax, 13.9, 7.7,4.4,0.95,"Laheta muistutus","Erapaivat, toimituspyynnot,\nhyllypuutteet",bg=WHITE,border=C_CUSTOMER,fs=8,bold=False)
+box(ax, 13.9, 6.6,4.4,0.95,"Broadcast kaikille","Tiedotteet kaikille\ntai valituille toimittajille",bg=WHITE,border=C_CUSTOMER,fs=8,bold=False)
+box(ax, 13.9, 5.5,4.4,0.95,"Naa vastaukset","Kyselyiden tulokset,\nyhteenvedot",bg=WHITE,border=C_CUSTOMER,fs=8,bold=False)
+box(ax, 13.9, 4.4,4.4,0.95,"QuickSight raportit","Toimittajien suorituskyky,\nreklamaatiotrendit (pilotti+)",bg="#E8EAF6",border=C_CUSTOMER,fs=7.5,bold=False)
+box(ax, 13.9, 3.4,4.4,0.75,"Kaupan Liitto","Aggregoitu anonymisoitu\nnakymä (tuotanto)",bg="#F1F8E9",border=C_CUSTOMER,fs=7.5)
+
+arr(ax, 16.1,12.0,16.1,11.6, C_CUSTOMER)
+arr(ax, 13.9,10.95,13.4,10.05, C_CUSTOMER, label="POST /customer/*\n+ API Key")
+
+# ═══════════════════════════════════════════════════════════════════════════
+# INTEGRAATIOT (alempi osa)
+# ═══════════════════════════════════════════════════════════════════════════
+cluster(ax, 0.2, 0.1, 18.4, 2.1, "INTEGRAATIOT  (mock demossa → oikeat pilottivaiheessa)", "#37474F", "#ECEFF1")
+
+box(ax, 0.5, 0.3, 3.0, 1.5, "Confluent Kafka","Toimituseventit\nReklamaatioeventit\n(SOK TRIAL)",bg=WHITE,border="#37474F",fs=7.5)
+box(ax, 4.0, 0.3, 3.0, 1.5, "Snowflake","Myyntidata\nHyllysaatavuus\nDatasharing",bg=WHITE,border="#37474F",fs=7.5)
+box(ax, 7.5, 0.3, 3.0, 1.5, "SAP BTP OData","Kassadata\nLaskutus\nTilitykset",bg=WHITE,border=C_SAP,fs=7.5)
+box(ax, 11.0,0.3, 3.0, 1.5, "Vanhemmat\ntoimiala-\njarjestelmat","WMS, varasto\nREST / batch",bg=WHITE,border="#37474F",fs=7.5)
+box(ax, 14.5,0.3, 4.0, 1.5, "Proaktiiviset tapahtumat\n(EventBridge Rules)","Paivittainen hyllytarkistus\nViikoittainen erapaivamuistutus\nMaaritettavat triggerit",bg="#FFF9C4",border="#F57F17",fs=7.5)
+
+# Integraatio -> Agent nuolet
+arr(ax, 2.0, 1.8, 6.7,2.5, "#37474F", lw=1.2, label="Kafka consumer")
+arr(ax, 5.5, 1.8, 6.7,2.5, "#37474F", lw=1.2, label="Snowflake query")
+arr(ax, 9.0, 1.8, 6.7,2.5, C_SAP,    lw=1.2, label="OData REST")
+
+# ═══════════════════════════════════════════════════════════════════════════
+# KAKSISUUNTAISET DATAVIRRAT
+# ═══════════════════════════════════════════════════════════════════════════
+# Toimittaja WA → API GW
+arr(ax, 4.94,10.0, 5.7,12.9, C_SUPPLIER, lw=2, label="viesti")
+# Agent → toimittaja (proaktiivinen)
+arr(ax, 5.7,5.0, 4.94,10.35, C_EVENT, lw=2, rad=0.2, label="proaktiivinen\nhalytys")
+# Customer ops → SQS
+arr(ax, 13.4,10.0, 10.1,7.4, C_CUSTOMER, lw=2, label="event")
+# Customer ops → Surveys
+arr(ax, 13.4,9.5, 10.1,3.5, C_CUSTOMER, lw=1.5, rad=0.15, label="survey")
 
 # ═══════════════════════════════════════════════════════════════════════════
 # LEGENDA
 # ═══════════════════════════════════════════════════════════════════════════
-legend_items = [
-    (C_DEMO,    "Vaihe 1: Demo (Free Tier / ~$1-2 Bedrock-kulu)"),
-    (C_PILOTTI, "Vaihe 2: Pilotti (asiakaslaskutus alkaa, oikeat integraatiot)"),
-    (C_TUOT,    "Vaihe 3: Tuotanto (SOK Tech Radar ADOPT, full scale)"),
-    ("#F57F17",  "Amazon Bedrock (AI-ydin)"),
-    ("#C62828",  "Monetisointi (SaaS-tiers: Free / Pro 49€ / Enterprise)"),
+legend = [
+    (C_SUPPLIER, "Toimittajan puoli — WhatsApp-keskustelu agentin kanssa"),
+    (C_AGENT,    "AI-agenttikerros — Bedrock Agent (Claude), tool-use, muisti"),
+    (C_CUSTOMER, "Kaupan puoli — kyselyt, muistutukset, broadcastit (API Key)"),
+    (C_EVENT,    "Proaktiivinen notifikaatio — SQS-eventit + EventBridge scheduler"),
+    ("#37474F",  "Integraatiot — Kafka, Snowflake, SAP BTP (mock → oikeat pilotissa)"),
 ]
-for i, (c, lbl) in enumerate(legend_items):
-    ax.add_patch(mpatches.Rectangle((0.4, 4.7 - i*0.4), 0.4, 0.28, color=c, zorder=5))
-    ax.text(0.95, 4.84 - i*0.4, lbl, va="center", fontsize=8, color="#212121")
+for i, (c, lbl) in enumerate(legend):
+    ax.add_patch(FancyBboxPatch((19.1, 11.5-i*0.6), 0.45, 0.35,
+        boxstyle="round,pad=0.05", facecolor=c, zorder=5))
+    ax.text(19.65, 11.67-i*0.6, lbl, va="center", fontsize=7.5, color="#212121")
 
-ax.text(0.4, 5.1, "Legenda:", fontsize=9, fontweight="bold", color="#212121")
+ax.text(19.1, 12.0, "Legenda:", fontsize=9, fontweight="bold", color="#212121")
 
-# ── Tallennus ───────────────────────────────────────────────────────────────
+# Kustannuslaatikko
+box(ax, 19.1, 7.5, 4.7, 3.8,
+    "DEMO-kustannus\n(oma luottokortti)\n\n"
+    "API Gateway:  ilmainen\n"
+    "Lambda:       ilmainen\n"
+    "DynamoDB:     ilmainen\n"
+    "EventBridge:  ilmainen\n"
+    "S3:           ilmainen\n"
+    "Bedrock Haiku: ~$1-2/demo\n\n"
+    "YHTEENSA: ~0-5 EUR/kk",
+    bg="#E8F5E9", border=C_SUPPLIER, fs=8)
+
 out = "docs/diagrams/architecture.png"
-plt.tight_layout(pad=0.5)
+plt.tight_layout(pad=0.3)
 plt.savefig(out, dpi=150, bbox_inches="tight", facecolor=fig.get_facecolor())
 plt.close()
 print(f"Kaavio tallennettu: {out}")
