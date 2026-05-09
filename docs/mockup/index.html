@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pientuottajat AI — Konseptimockup</title>
+<style>
+  :root {
+    --green:#25D366;--green-d:#128C7E;--green-l:#DCF8C6;
+    --blue:#1565C0;--blue-l:#E3F2FD;--orange:#E65100;--orange-l:#FFF3E0;
+    --gray:#F0F2F5;--dark:#1A1A1A;--mid:#546E7A;--white:#fff;
+    --aws:#FF9900;--n8n:#EA5D2C;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,sans-serif}
+  body{background:#F5F7FA;color:var(--dark)}
+
+  /* NAV */
+  nav{background:var(--dark);color:#fff;padding:14px 32px;display:flex;align-items:center;gap:20px;position:sticky;top:0;z-index:100}
+  nav .logo{font-size:18px;font-weight:700;letter-spacing:-0.3px}
+  nav .badge{background:#2E7D32;color:#fff;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600}
+  nav .tabs{display:flex;gap:4px;margin-left:auto}
+  nav .tab{color:#aaa;padding:7px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;border:none;background:none;transition:all .2s}
+  nav .tab:hover,.tab.active{background:#fff2;color:#fff}
+
+  /* HERO */
+  .hero{background:linear-gradient(135deg,#1A2A1A 0%,#2E7D32 60%,#1565C0 100%);color:#fff;padding:64px 32px;text-align:center}
+  .hero h1{font-size:36px;font-weight:800;margin-bottom:12px}
+  .hero p{font-size:16px;opacity:.85;max-width:680px;margin:0 auto 28px}
+  .hero .pills{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .pill{background:#fff2;border:1px solid #fff4;color:#fff;padding:6px 16px;border-radius:20px;font-size:13px}
+
+  /* SECTIONS */
+  .section{padding:56px 32px;max-width:1200px;margin:0 auto}
+  .section-title{font-size:24px;font-weight:700;margin-bottom:6px}
+  .section-sub{color:var(--mid);font-size:14px;margin-bottom:32px}
+  .screen-label{display:inline-block;background:var(--dark);color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:6px;margin-bottom:12px;letter-spacing:.5px}
+
+  /* PHONES */
+  .screens{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:32px;margin-bottom:40px}
+  .phone-wrap{text-align:center}
+  .phone{width:280px;height:580px;background:#fff;border-radius:36px;border:8px solid #222;box-shadow:0 20px 60px #0003;margin:0 auto;overflow:hidden;display:flex;flex-direction:column}
+  .phone-bar{background:#25D366;padding:12px 16px;display:flex;align-items:center;gap:10px}
+  .phone-bar .avatar{width:36px;height:36px;background:#fff3;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px}
+  .phone-bar .info{color:#fff;flex:1}
+  .phone-bar .name{font-size:14px;font-weight:600}
+  .phone-bar .status{font-size:11px;opacity:.8}
+  .chat{flex:1;background:#ECE5DD url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23c5b9a7' fill-opacity='0.15'%3E%3Cpath d='M20 20c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10zm10 0c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10z'/%3E%3C/g%3E%3C/svg%3E");padding:12px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+  .bubble{max-width:78%;padding:8px 12px;border-radius:12px;font-size:12.5px;line-height:1.5;position:relative}
+  .bubble .time{font-size:10px;color:#999;margin-top:4px;text-align:right}
+  .b-in{background:#fff;border-radius:2px 12px 12px 12px;align-self:flex-start}
+  .b-out{background:#DCF8C6;border-radius:12px 2px 12px 12px;align-self:flex-end}
+  .b-ai{background:#E8F5E9;border:1px solid #C8E6C9;border-radius:2px 12px 12px 12px;align-self:flex-start}
+  .b-system{background:#FFF3E0;border:1px solid #FFE0B2;border-radius:12px;align-self:center;font-size:11px;max-width:90%;text-align:center}
+  .ai-badge{display:inline-block;background:#2E7D32;color:#fff;font-size:9px;padding:1px 6px;border-radius:4px;margin-bottom:4px;font-weight:600}
+  .phone-input{background:#fff;padding:8px 12px;display:flex;align-items:center;gap:8px;border-top:1px solid #ddd}
+  .phone-input input{flex:1;border:none;outline:none;font-size:12.5px;background:#F0F2F5;padding:8px 12px;border-radius:20px}
+  .phone-input .send{width:34px;height:34px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
+
+  /* WEB PORTAL */
+  .web-portal{background:#fff;border-radius:16px;border:1px solid #E0E0E0;box-shadow:0 4px 24px #0001;overflow:hidden}
+  .portal-bar{background:#1565C0;color:#fff;padding:12px 20px;display:flex;align-items:center;gap:12px;font-size:13px;font-weight:600}
+  .portal-nav{background:#0D47A1;display:flex;gap:0}
+  .pnav{color:#ffffffaa;padding:10px 18px;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;transition:.2s}
+  .pnav.active{color:#fff;border-bottom-color:#64B5F6}
+  .portal-body{padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .stat-card{background:#F8F9FA;border-radius:12px;padding:16px;border:1px solid #EEEEEE}
+  .stat-card .n{font-size:28px;font-weight:800;color:var(--blue)}
+  .stat-card .l{font-size:12px;color:var(--mid);margin-top:4px}
+  .stat-card .trend{font-size:11px;color:#2E7D32;margin-top:4px}
+  .delivery-list{background:#fff;border-radius:12px;border:1px solid #EEE;overflow:hidden}
+  .dl-header{background:#F5F5F5;padding:12px 16px;font-size:12px;font-weight:700;color:var(--mid)}
+  .dl-row{padding:12px 16px;border-bottom:1px solid #F5F5F5;display:flex;align-items:center;gap:12px;font-size:12px}
+  .dl-row:last-child{border-bottom:none}
+  .status-badge{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700}
+  .s-ok{background:#E8F5E9;color:#2E7D32}
+  .s-rec{background:#FFF3E0;color:#E65100}
+  .s-warn{background:#FCE4EC;color:#C62828}
+
+  /* N8N OPS */
+  .n8n-wrap{background:#1A1A2E;border-radius:16px;overflow:hidden;border:1px solid #333}
+  .n8n-bar{background:#111;padding:12px 20px;display:flex;align-items:center;gap:12px}
+  .n8n-logo{background:var(--n8n);color:#fff;font-size:13px;font-weight:800;padding:4px 12px;border-radius:6px}
+  .n8n-body{padding:20px;color:#fff}
+  .workflow-card{background:#252538;border-radius:10px;padding:14px 16px;margin-bottom:12px;border:1px solid #383860;cursor:pointer;transition:.2s}
+  .workflow-card:hover{border-color:#EA5D2C;background:#2D2D45}
+  .wf-title{font-size:13px;font-weight:600;color:#fff;margin-bottom:4px}
+  .wf-desc{font-size:11px;color:#9E9EC0}
+  .wf-footer{display:flex;align-items:center;gap:8px;margin-top:10px}
+  .wf-active{background:#1B5E20;color:#A5D6A7;font-size:10px;padding:2px 8px;border-radius:10px}
+  .wf-next{color:#9E9EC0;font-size:10px}
+  .wf-trigger-btn{background:var(--n8n);color:#fff;border:none;padding:6px 14px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;margin-left:auto}
+  .node-flow{display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap}
+  .node{background:#383860;color:#CBD5E0;font-size:10px;padding:4px 10px;border-radius:6px;border:1px solid #4A4A7A}
+  .node-arrow{color:#6B7280;font-size:12px}
+
+  /* ARCH */
+  .arch-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .arch-box{background:#fff;border-radius:14px;padding:20px;border:1px solid #E0E0E0}
+  .arch-box h3{font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .arch-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;font-size:13px}
+  .arch-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+  .arch-item .detail{color:var(--mid);font-size:11px;margin-top:2px}
+
+  /* STEPS */
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+  .step{background:#fff;border-radius:14px;padding:20px;border:1px solid #E0E0E0;position:relative}
+  .step-num{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;margin-bottom:12px}
+  .step h3{font-size:14px;font-weight:700;margin-bottom:6px}
+  .step p{font-size:12px;color:var(--mid);line-height:1.6}
+  .step .tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-top:10px}
+
+  /* FOOTER */
+  footer{background:var(--dark);color:#aaa;text-align:center;padding:24px;font-size:12px}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Pientuottajat AI</div>
+  <div class="badge">KONSEPTI — ei tuotantosovellus</div>
+  <div class="tabs">
+    <button class="tab active" onclick="show('toimittaja')">Toimittajan näkymä</button>
+    <button class="tab" onclick="show('kauppa')">Kaupan näkymä</button>
+    <button class="tab" onclick="show('arkkitehtuuri')">Arkkitehtuuri</button>
+    <button class="tab" onclick="show('stepit')">Seuraavat askeleet</button>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>Pientuottajat AI</h1>
+  <p>Proaktiivinen AI-agentti joka kommunikoi toimittajien kanssa WhatsAppissa — ja kaupan henkilöstö hallinnoi viestintää visuaalisella ops-työkalulla</p>
+  <div class="pills">
+    <span class="pill">WhatsApp Business API</span>
+    <span class="pill">Amazon Bedrock Agent (Claude)</span>
+    <span class="pill">n8n — open source ops</span>
+    <span class="pill">AWS Serverless</span>
+    <span class="pill">Manuaalidata demossa</span>
+  </div>
+</div>
+
+<!-- ═══ TOIMITTAJAN NÄKYMÄ ═══ -->
+<div id="view-toimittaja">
+<div class="section">
+  <div class="section-title">Toimittajan kokemus</div>
+  <div class="section-sub">Toimittaja käyttää WhatsAppia kuten aina ennenkin — AI-agentti hoitaa loput</div>
+
+  <div class="screens">
+
+    <!-- WA: Kysymys-vastaus -->
+    <div class="phone-wrap">
+      <div class="screen-label">1. TOIMITTAJA KYSYY — AGENTTI VASTAA</div>
+      <div class="phone">
+        <div class="phone-bar">
+          <div class="avatar">🤖</div>
+          <div class="info"><div class="name">Kauppa-Assistentti</div><div class="status">verkossa</div></div>
+        </div>
+        <div class="chat">
+          <div class="bubble b-out">Moi! Mikä on toimitukseni DEL-002 tilanne?<div class="time">09:14</div></div>
+          <div class="bubble b-ai"><span class="ai-badge">AI-AGENTTI</span><br>Hei Matti! Toimitus DEL-002 toimitettiin S-market Keravalle 5.5. Se on tällä hetkellä reklamaatiossa — 3 pakkausta vaurioitui.<br><br>Haluatko kirjata vastineen reklamaatioon?<div class="time">09:14 ✓✓</div></div>
+          <div class="bubble b-out">Kyllä, kirjaa että vaurio tapahtui kuljetuksessa<div class="time">09:15</div></div>
+          <div class="bubble b-ai"><span class="ai-badge">AI-AGENTTI</span><br>Vastine kirjattu reklamaatioon REC-042: "Vaurio tapahtui kuljetuksessa." Kaupan ostaja käsittelee sen 2 arkipäivässä.<div class="time">09:15 ✓✓</div></div>
+        </div>
+        <div class="phone-input"><input placeholder="Kirjoita viesti..."><div class="send">➤</div></div>
+      </div>
+    </div>
+
+    <!-- WA: Proaktiivinen hälytys -->
+    <div class="phone-wrap">
+      <div class="screen-label">2. PROAKTIIVINEN HÄLYTYS KAUPALTA</div>
+      <div class="phone">
+        <div class="phone-bar">
+          <div class="avatar">��</div>
+          <div class="info"><div class="name">Kauppa-Assistentti</div><div class="status">verkossa</div></div>
+        </div>
+        <div class="chat">
+          <div class="bubble b-system">⚠️ Automaattinen hälytys — klo 08:00</div>
+          <div class="bubble b-ai"><span class="ai-badge">HYLLYHÄLYTYS</span><br>Sale Järvenpää: Luomuhillo 400g hyllytäyttöaste 15% — KRIITTINEN.<br><br>Edellinen toimitus 7 pv sitten. Suosittelemme pikatoimitus tänään tai huomenna.<div class="time">08:00 ✓✓</div></div>
+          <div class="bubble b-out">Ok, toimitan huomenna aamulla 30 kpl<div class="time">08:03</div></div>
+          <div class="bubble b-ai"><span class="ai-badge">AI-AGENTTI</span><br>Sovittu! Kirjasin toimitusennusteen: 30 kpl / 10.5. Sale Järvenpää. Myymälä saa automaattisen ilmoituksen.<div class="time">08:04 ✓✓</div></div>
+        </div>
+        <div class="phone-input"><input placeholder="Kirjoita viesti..."><div class="send">➤</div></div>
+      </div>
+    </div>
+
+    <!-- WA: Kysely kaupalta -->
+    <div class="phone-wrap">
+      <div class="screen-label">3. KAUPAN KYSELY TOIMITTAJALLE</div>
+      <div class="phone">
+        <div class="phone-bar">
+          <div class="avatar">🤖</div>
+          <div class="info"><div class="name">Kauppa-Assistentti</div><div class="status">verkossa</div></div>
+        </div>
+        <div class="chat">
+          <div class="bubble b-system">📋 Kysely — S-ryhmä Hankinta</div>
+          <div class="bubble b-ai"><span class="ai-badge">KYSELY</span><br>Pystytkö toimittamaan 20% enemmän Luomuhilloja heinäkuussa 2026?<br><br>Vastaa:<br>1. Kyllä<br>2. Ei<br>3. Osittain<br><br>Vastausaika: 15.5.2026<div class="time">10:00 ✓✓</div></div>
+          <div class="bubble b-out">1<div class="time">10:22</div></div>
+          <div class="bubble b-ai"><span class="ai-badge">AI-AGENTTI</span><br>Kiitos! Vastauksesi "Kyllä" on kirjattu kyselyyn. Hankintapäällikkö näkee tulokset koonnissa.<div class="time">10:22 ✓✓</div></div>
+          <div class="bubble b-out">Paljonko tilitys on tulossa toukokuulta?<div class="time">10:24</div></div>
+          <div class="bubble b-ai"><span class="ai-badge">AI-AGENTTI</span><br>Toukokuun tilitys: 1 729 € (brutto 1 820 €, provisio 91 €). Eräpäivä 10.6.2026.<div class="time">10:24 ✓✓</div></div>
+        </div>
+        <div class="phone-input"><input placeholder="Kirjoita viesti..."><div class="send">➤</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Web portal -->
+  <div class="screen-label">4. WEB-PORTAALI (toimittaja — myöhempi vaihe)</div>
+  <div class="web-portal">
+    <div class="portal-bar">🏪 Pientuottaja-portaali &nbsp;|&nbsp; Matti Mäkinen — Luomutila Mäkinen Oy</div>
+    <div class="portal-nav">
+      <div class="pnav active">Yhteenveto</div>
+      <div class="pnav">Toimitukset</div>
+      <div class="pnav">Tilitykset</div>
+      <div class="pnav">Reklamaatiot</div>
+      <div class="pnav">Hyllysaatavuus</div>
+    </div>
+    <div class="portal-body">
+      <div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+          <div class="stat-card"><div class="n">3 627 €</div><div class="l">Myynti toukokuu</div><div class="trend">↑ 12% vs. huhtikuu</div></div>
+          <div class="stat-card"><div class="n">1 729 €</div><div class="l">Tilitys (erä 10.6.)</div><div class="trend">Avoin</div></div>
+          <div class="stat-card"><div class="n">1</div><div class="l">Avoin reklamaatio</div><div class="trend" style="color:#E65100">Vastaa 13.5. mennessä</div></div>
+          <div class="stat-card"><div class="n">15%</div><div class="l">Alin hyllytäyttö</div><div class="trend" style="color:#C62828">⚠ Sale Järvenpää</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="delivery-list">
+          <div class="dl-header">Viimeisimmät toimitukset</div>
+          <div class="dl-row"><span style="flex:1">DEL-001 — Prisma Tikkurila</span><span class="status-badge s-ok">Vastaanotettu</span></div>
+          <div class="dl-row"><span style="flex:1">DEL-002 — S-market Kerava</span><span class="status-badge s-rec">Reklamaatio</span></div>
+          <div class="dl-row"><span style="flex:1">DEL-003 — Prisma Tikkurila</span><span class="status-badge s-ok">Laskutettu</span></div>
+          <div class="dl-row"><span style="flex:1">DEL-004 — Sale Järvenpää</span><span class="status-badge s-ok">Tilitetty</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ KAUPAN NÄKYMÄ ═══ -->
+<div id="view-kauppa" style="display:none">
+<div class="section">
+  <div class="section-title">Kaupan henkilöstön näkymä</div>
+  <div class="section-sub">n8n open source -workflow-työkalu — visuaalinen, ei vaadi koodausta</div>
+
+  <div class="screen-label">n8n — KAUPAN OPS-TYÖKALU (open source, self-hosted)</div>
+  <div class="n8n-wrap">
+    <div class="n8n-bar">
+      <div class="n8n-logo">n8n</div>
+      <span style="color:#aaa;font-size:13px">Pientuottajat Ops — S-ryhmä Hankinta</span>
+      <span style="color:#4CAF50;font-size:12px;margin-left:auto">● Aktiivinen</span>
+    </div>
+    <div class="n8n-body">
+
+      <div style="color:#9E9EC0;font-size:12px;margin-bottom:16px">Aktiiviset työnkulut — hallinnoi viestintää toimittajille ilman koodausta</div>
+
+      <div class="workflow-card">
+        <div class="wf-title">📋 Kysely toimittajille</div>
+        <div class="wf-desc">Lähetä kysymys yksittäiselle, toimittajaryhmälle tai kaikille — kerää vastaukset automaattisesti</div>
+        <div class="node-flow">
+          <div class="node">Triggeroi</div><div class="node-arrow">→</div>
+          <div class="node">Valitse kohderyhmä</div><div class="node-arrow">→</div>
+          <div class="node">WhatsApp viesti</div><div class="node-arrow">→</div>
+          <div class="node">Kerää vastaukset</div><div class="node-arrow">→</div>
+          <div class="node">Yhteenveto</div>
+        </div>
+        <div class="wf-footer"><span class="wf-active">Aktiivinen</span><span class="wf-next">Viimeksi ajettu: tänään 10:00</span><button class="wf-trigger-btn">Käynnistä →</button></div>
+      </div>
+
+      <div class="workflow-card">
+        <div class="wf-title">⏰ Eräpäivämuistutus</div>
+        <div class="wf-desc">Automaattinen muistutus 5 pv ennen tilityksen eräpäivää — toimittajakohtainen viesti</div>
+        <div class="node-flow">
+          <div class="node">Ajastus (päivittäin)</div><div class="node-arrow">→</div>
+          <div class="node">Tarkista eräpäivät</div><div class="node-arrow">→</div>
+          <div class="node">Suodata -5 pv</div><div class="node-arrow">→</div>
+          <div class="node">WhatsApp muistutus</div>
+        </div>
+        <div class="wf-footer"><span class="wf-active">Aktiivinen</span><span class="wf-next">Seuraava ajo: huomenna 07:00</span><button class="wf-trigger-btn">Muokkaa →</button></div>
+      </div>
+
+      <div class="workflow-card">
+        <div class="wf-title">🚨 Hyllypuutehälytys</div>
+        <div class="wf-desc">Kun hyllytäyttöaste alle 20% → automaattinen WhatsApp toimittajalle + myymälän ilmoitus</div>
+        <div class="node-flow">
+          <div class="node">Webhook / Ajastus</div><div class="node-arrow">→</div>
+          <div class="node">Tarkista hyllyt</div><div class="node-arrow">→</div>
+          <div class="node">Alle 20%?</div><div class="node-arrow">→</div>
+          <div class="node">Hälytys toimittajalle</div><div class="node-arrow">→</div>
+          <div class="node">Kirjaa DynamoDB</div>
+        </div>
+        <div class="wf-footer"><span class="wf-active">Aktiivinen</span><span class="wf-next">Reaaliaikainen</span><button class="wf-trigger-btn">Testaa →</button></div>
+      </div>
+
+      <div class="workflow-card">
+        <div class="wf-title">📢 Joukkotiedote</div>
+        <div class="wf-desc">Lähetä tiedote kaikille tai valitulle ryhmälle toimittajia — esim. sopimusmuutos, hintatarkistus</div>
+        <div class="node-flow">
+          <div class="node">Manuaalinen käynnistys</div><div class="node-arrow">→</div>
+          <div class="node">Valitse ryhmä</div><div class="node-arrow">→</div>
+          <div class="node">WhatsApp broadcast</div><div class="node-arrow">→</div>
+          <div class="node">Raportoi tulokset</div>
+        </div>
+        <div class="wf-footer"><span style="background:#1A237E;color:#90CAF9;font-size:10px;padding:2px 8px;border-radius:10px">Manuaalinen</span><span class="wf-next">Edellinen: 2.5.2026 — 23/23 toimitettu</span><button class="wf-trigger-btn">Uusi →</button></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ ARKKITEHTUURI ═══ -->
+<div id="view-arkkitehtuuri" style="display:none">
+<div class="section">
+  <div class="section-title">Tekninen arkkitehtuuri — Demo + Pilotti</div>
+  <div class="section-sub">Yhdistetty vaihe — ei erillistä demoa ja pilottia</div>
+  <div class="arch-grid">
+    <div class="arch-box">
+      <h3><span style="color:#25D366">📱</span> Kanavat</h3>
+      <div class="arch-item"><div class="arch-icon" style="background:#E8F5E9">📱</div><div><div>WhatsApp Business API</div><div class="detail">Meta Cloud API — yrityksen SIM-kortti — ei uutta appia toimittajalle</div></div></div>
+      <div class="arch-item"><div class="arch-icon" style="background:#E3F2FD">🌐</div><div><div>Web Portal (Next.js)</div><div class="detail">SOK ADOPT — vaihtoehtoinen kanava, isompi näkymä — myöhempi vaihe</div></div></div>
+    </div>
+    <div class="arch-box">
+      <h3><span style="color:#BF360C">🤖</span> AI-agentti</h3>
+      <div class="arch-item"><div class="arch-icon" style="background:#FFF3E0">🧠</div><div><div>Amazon Bedrock Agent (Claude)</div><div class="detail">Tool-use: päättää itse mitä dataa hakee — muistaa keskustelun — 9 toimintoa</div></div></div>
+      <div class="arch-item"><div class="arch-icon" style="background:#FFF9C4">⚡</div><div><div>Lambda Action Groups</div><div class="detail">Python — hakee dataa DynamoDB:stä — manuaalidata demossa</div></div></div>
+    </div>
+    <div class="arch-box">
+      <h3><span style="color:#FF9900">☁️</span> AWS Infrastruktuuri</h3>
+      <div class="arch-item"><div class="arch-icon" style="background:#FFF3E0">🔀</div><div><div>API Gateway + Lambda</div><div class="detail">SOK ADOPT — serverless — AWS Free Tier kattaa demon</div></div></div>
+      <div class="arch-item"><div class="arch-icon" style="background:#FFF3E0">🗄️</div><div><div>DynamoDB On-Demand</div><div class="detail">Toimittajaprofiilit, manuaalidata, kyselyvastaukset — 25 GB ilmaiseksi</div></div></div>
+      <div class="arch-item"><div class="arch-icon" style="background:#FFF3E0">📬</div><div><div>SQS + EventBridge</div><div class="detail">Event-pohjainen notifikaatio — korvaa Confluent Kafkan demo+pilottivaiheessa</div></div></div>
+    </div>
+    <div class="arch-box">
+      <h3><span style="color:#EA5D2C">⚙️</span> Kaupan ops — n8n</h3>
+      <div class="arch-item"><div class="arch-icon" style="background:#FBE9E7">🔄</div><div><div>n8n (open source)</div><div class="detail">Visuaalinen workflow-builder — self-hosted AWS — joukkotiedotteet, kyselyt, muistutukset</div></div></div>
+      <div class="arch-item"><div class="arch-icon" style="background:#FBE9E7">👥</div><div><div>Toimittajaryhmät</div><div class="detail">Kaikki / alue / yksittäinen — n8n:ssä visuaalisesti ilman koodausta</div></div></div>
+      <div class="arch-item"><div class="arch-icon" style="background:#FFF9C4">📊</div><div><div>Manuaalidata (demossa)</div><div class="detail">Kassadata, toimitukset, tilitykset syötetään manuaalisesti DynamoDB:hen — ei integraatioita</div></div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ STEPIT ═══ -->
+<div id="view-stepit" style="display:none">
+<div class="section">
+  <div class="section-title">Seuraavat askeleet</div>
+  <div class="section-sub">Konkreettinen etenemissuunnitelma konseptista pilottiin</div>
+  <div class="steps">
+    <div class="step"><div class="step-num" style="background:#1565C0">1</div><h3>Sidosryhmähaastattelut</h3><p>Valitaan 3-5 pientoimittajaa ja kaupan edustajat. Haastatellaan tarpeet transcript päällä — AI tiivistää vaatimukset automaattisesti.</p><div class="tag" style="background:#E3F2FD;color:#1565C0">Viikot 1-2</div></div>
+    <div class="step"><div class="step-num" style="background:#2E7D32">2</div><h3>Konseptin validointi</h3><p>Esitellään tämä mockup + konseptidokumentti asiakkaalle. Sovitaan pilottimyymälät ja -toimittajat sekä kassadatan syöttötapa.</p><div class="tag" style="background:#E8F5E9;color:#2E7D32">Viikko 2-3</div></div>
+    <div class="step"><div class="step-num" style="background:#E65100">3</div><h3>Tekninen setup</h3><p>AWS-tili + Bedrock. WhatsApp Business API rekisteröinti. n8n asennus. Bedrock Agent luonti. Ensimmäinen toimittaja testaa.</p><div class="tag" style="background:#FFF3E0;color:#E65100">Viikot 3-4</div></div>
+    <div class="step"><div class="step-num" style="background:#6A1B9A">4</div><h3>Pilotti — 5-10 toimittajaa</h3><p>Onboarding WhatsAppiin. Manuaalidata syötetty. Kaupan henkilöstö käyttää n8n:ää. Kerätään palaute ja iteroidaan.</p><div class="tag" style="background:#F3E5F5;color:#6A1B9A">Kuukaudet 1-3</div></div>
+    <div class="step"><div class="step-num" style="background:#37474F">5</div><h3>Tuotanto — oikeat integraatiot</h3><p>SAP BTP / WMS integraatio. Web-portaali toimittajille. Confluent Kafka real-time eventsille. Laajennus muihin alueisiin.</p><div class="tag" style="background:#ECEFF1;color:#37474F">Kuukausi 4+</div></div>
+  </div>
+</div>
+</div>
+
+<footer>
+  Pientuottajat AI — Konseptimockup | Ei tuotantosovellus | github.com/sivonsam/pientuottajat_AI
+</footer>
+
+<script>
+function show(view) {
+  ['toimittaja','kauppa','arkkitehtuuri','stepit'].forEach(v => {
+    document.getElementById('view-'+v).style.display = v===view?'':'none';
+  });
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    t.classList.toggle('active', ['toimittaja','kauppa','arkkitehtuuri','stepit'][i]===view);
+  });
+}
+</script>
+</body>
+</html>
