@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import * as cdk from 'aws-cdk-lib';
-import { PientuottajatStack } from './lib/pientuottajat-stack';
+import { PientuottajatStack } from '../lib/pientuottajat-stack';
 
 const app = new cdk.App();
 

@@ -188,9 +188,9 @@ export class PientuottajatStack extends cdk.Stack {
     const customerOpts = { apiKeyRequired: true };
 
     customerRes.addResource('broadcast').addMethod('POST', customerOpsInt, customerOpts);
-    customerRes.addResource('survey').addMethod('POST', customerOpsInt, customerOpts);
-    const surveyResults = customerRes.addResource('survey').addResource('results');
-    surveyResults.addMethod('GET', customerOpsInt, customerOpts);
+    const surveyRes = customerRes.addResource('survey');
+    surveyRes.addMethod('POST', customerOpsInt, customerOpts);
+    surveyRes.addResource('results').addMethod('GET', customerOpsInt, customerOpts);
     customerRes.addResource('reminder').addMethod('POST', customerOpsInt, customerOpts);
 
     // ── Outputs ──────────────────────────────────────────────────────────────
