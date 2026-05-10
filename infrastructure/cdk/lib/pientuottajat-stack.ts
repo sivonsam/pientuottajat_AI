@@ -6,6 +6,7 @@ import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as scheduler from 'aws-cdk-lib/aws-scheduler';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { Construct } from 'constructs';
 import * as path from 'path';
@@ -193,7 +194,100 @@ export class PientuottajatStack extends cdk.Stack {
     surveyRes.addResource('results').addMethod('GET', customerOpsInt, customerOpts);
     customerRes.addResource('reminder').addMethod('POST', customerOpsInt, customerOpts);
 
+    // ── n8n EC2 t3.micro (Free Tier) ─────────────────────────────────────────
+    const vpc = ec2.Vpc.fromLookup(this, 'DefaultVpc', { isDefault: true });
+
+    const n8nSg = new ec2.SecurityGroup(this, 'N8nSG', {
+      vpc,
+      description: 'n8n security group',
+      allowAllOutbound: true,
+    });
+    n8nSg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(80),   'HTTP');
+    n8nSg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443),  'HTTPS');
+    n8nSg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(5678), 'n8n direct');
+
+    const n8nUserData = ec2.UserData.forLinux();
+    n8nUserData.addCommands(
+      // Amazon Linux 2023 — dnf, Node.js 20 natively available
+      'dnf update -y',
+      'dnf install -y nodejs nginx',
+      'node --version && npm --version',
+      'npm install -g n8n',
+      // n8n systemd service
+      'mkdir -p /opt/n8n',
+      `cat > /etc/systemd/system/n8n.service << 'SVCEOF'
+[Unit]
+Description=n8n workflow automation
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Environment=N8N_BASIC_AUTH_ACTIVE=true
+Environment=N8N_BASIC_AUTH_USER=admin
+Environment=N8N_BASIC_AUTH_PASSWORD=pientuottajat2025
+Environment=N8N_HOST=0.0.0.0
+Environment=N8N_PORT=5678
+Environment=N8N_PROTOCOL=http
+Environment=WEBHOOK_URL=http://localhost:5678
+Environment=N8N_USER_FOLDER=/opt/n8n
+ExecStart=/usr/local/bin/n8n start
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+SVCEOF`,
+      'systemctl daemon-reload',
+      'systemctl enable n8n',
+      'systemctl start n8n',
+      // Nginx reverse proxy port 80 -> n8n 5678
+      `cat > /etc/nginx/conf.d/n8n.conf << 'NGXEOF'
+server {
+    listen 80;
+    server_name _;
+    location / {
+        proxy_pass http://localhost:5678;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+NGXEOF`,
+      'rm -f /etc/nginx/conf.d/default.conf',
+      'systemctl enable nginx',
+      'systemctl start nginx',
+    );
+
+    const n8nInstance = new ec2.Instance(this, 'N8nInstance', {
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
+      machineImage: ec2.MachineImage.latestAmazonLinux2023(),
+      securityGroup: n8nSg,
+      userData: n8nUserData,
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+      // SSM access for debugging
+      role: new iam.Role(this, 'N8nInstanceRole', {
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'),
+        ],
+      }),
+    });
+
+    const n8nEip = new ec2.CfnEIP(this, 'N8nEIP');
+    new ec2.CfnEIPAssociation(this, 'N8nEIPAssoc', {
+      instanceId: n8nInstance.instanceId,
+      eip: n8nEip.ref,
+    });
+
     // ── Outputs ──────────────────────────────────────────────────────────────
+    new cdk.CfnOutput(this, 'N8nUrl', {
+      value: `http://${n8nEip.ref}`,
+      description: 'n8n ops-työkalu kaupan henkilöstölle — admin/pientuottajat2025',
+    });
     new cdk.CfnOutput(this, 'WhatsAppWebhookUrl', {
       value: `${api.url}webhook/whatsapp`,
       description: 'Meta Business konsoliin: WhatsApp -> Configuration -> Webhook Callback URL',
