@@ -10,14 +10,15 @@ flowchart TB
         direction TB
 
         subgraph CH1["Kanavat"]
-            TG[Telegram Bot\n🆓 ilmainen API]
+            WA1[WhatsApp Business API\nMeta Cloud API\n✅ Toimii nyt]
         end
 
         subgraph AWS1["AWS Serverless (Free Tier / Pay-per-use)"]
             APIGW1[API Gateway\n🆓 1M req/kk ilmaiseksi]
             LBD1[Lambda Webhook\nPython 3.12\n🆓 1M inv/kk ilmaiseksi]
-            LBD_HAIKU[Lambda AI Handler\nBedrock Haiku\n💲 ~0,001$/1k tokens]
+            LBD_NOVA[Lambda AI Handler\nAmazon Nova Lite\neu.amazon.nova-lite-v1:0\n💲 ~0,0001$/1k tokens]
             DDB1[(DynamoDB On-Demand\n🆓 25GB ilmaiseksi\nToimittajaprofiilit\nKeskusteluhistoria)]
+            SQS1[SQS Queue\nProaktiiviset hälytykset]
             S3_1[S3 Raportit\n🆓 5GB ilmaiseksi]
             EVB[EventBridge Scheduler\n🆓 Ilmainen taso\nAjastetut raportit]
         end
@@ -26,14 +27,14 @@ flowchart TB
             MOCKDATA[Mock JSON\nToimitukset\nReklamaatiot\nMyynti\nHyllysaatavuus]
         end
 
-        TG -->|webhook HTTPS| APIGW1
+        WA1 -->|webhook HTTPS| APIGW1
         APIGW1 --> LBD1
-        LBD1 --> LBD_HAIKU
-        LBD_HAIKU <--> DDB1
-        LBD_HAIKU --> MOCKDATA
-        EVB -->|ajastettu| LBD_HAIKU
-        LBD_HAIKU --> S3_1
-        LBD_HAIKU -->|proaktiivinen viesti| TG
+        LBD1 --> LBD_NOVA
+        LBD_NOVA <--> DDB1
+        LBD_NOVA --> MOCKDATA
+        EVB -->|ajastettu| SQS1 --> LBD_NOVA
+        LBD_NOVA --> S3_1
+        LBD_NOVA -->|proaktiivinen viesti| WA1
     end
 
     %% ══════════════════════════════════════════════════════════════
@@ -51,7 +52,7 @@ flowchart TB
         subgraph AWS2["AWS — Laajennettu"]
             APIGW2[API Gateway]
             LBD2[Lambda Webhook]
-            BEDROCK2[Bedrock Agent\nClaude 3 Haiku/Sonnet]
+            BEDROCK2[Bedrock Agent\nAmazon Nova Pro / Claude Sonnet]
             DDB2[(DynamoDB\nMulti-tenant\nTenantID-partitiointi)]
             SQS2[SQS FIFO\nProaktiiviset hälytykset]
             S3_2[S3 Raportit & PDF]
