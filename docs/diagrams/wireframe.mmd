@@ -1,0 +1,76 @@
+---
+title: Pientuottajat AI — Rautalanka-arkkitehtuuri
+---
+flowchart TB
+
+    %% ══════════════════════════════════
+    %% TOIMITTAJAT
+    %% ══════════════════════════════════
+    subgraph SUPPLIERS["🧑‍🌾 TOIMITTAJAT  (pientuottajat)"]
+        direction LR
+        S1["Toimittaja A\nNetvisor"]
+        S2["Toimittaja B\nProcountor"]
+        S3["Toimittaja C\nLemonsoft"]
+        S4["Toimittaja D\nManuaalinen"]
+    end
+
+    %% ══════════════════════════════════
+    %% SUPPLIER API — standardirajapinta
+    %% ══════════════════════════════════
+    subgraph SAPI["📡 SUPPLIER API  (meidän rakentama — AWS API Gateway)"]
+        direction LR
+        EP1["POST /deliveries\ntoimitusdata"]
+        EP2["POST /invoices\nlaskudata"]
+        EP3["POST /reclamations\nreklamaatiot"]
+        EP4["POST /inventory\nvarastotilanne"]
+        AUTH["API Key\nper toimittaja"]
+    end
+
+    %% ══════════════════════════════════
+    %% AI YDIN
+    %% ══════════════════════════════════
+    subgraph AICORE["🧠 AI YDIN  (AWS Bedrock Agent + MCP)"]
+        direction TB
+        AGENT["Bedrock Agent\nAmazon Nova Pro"]
+        MCP1["MCP Tool\nSupplier API data"]
+        MCP2["MCP Tool\nS-Data / Snowflake\n(S-ryhmän myyntidata)"]
+        MCP3["MCP Tool\nReklamaatiot & hälytykset"]
+        MEM["DynamoDB\nKeskustelumuisti\nToimittajaprofiilit"]
+        AGENT --> MCP1 & MCP2 & MCP3
+        AGENT <--> MEM
+    end
+
+    %% ══════════════════════════════════
+    %% KANAVAT — toimittajan käyttöliittymä
+    %% ══════════════════════════════════
+    subgraph CHANNELS["💬 KANAVAT  (toimittajan UI)"]
+        direction LR
+        WA["WhatsApp\n✅ rakennettu"]
+        TG["Telegram\n🔧 tulossa"]
+    end
+
+    %% ══════════════════════════════════
+    %% S-RYHMÄ OPS
+    %% ══════════════════════════════════
+    subgraph CUSTOMER["🏪 S-RYHMÄ  (asiakkaan ops-näkymä)"]
+        direction LR
+        N8N["n8n\nWorkflow-automaatio\nBroadcast / hälytykset"]
+        DASH["Dashboard\nRaportit & analytiikka"]
+        SDATA["S-Data\nSnowflake\nmyynti & menekki"]
+    end
+
+    %% ══════════════════════════════════
+    %% YHTEYDET
+    %% ══════════════════════════════════
+    S1 & S2 & S3 -->|"oma adapteri\n(toimittajan vastuulla)"| SAPI
+    S4 -->|"WhatsApp-komento\ntai web-lomake"| SAPI
+
+    SAPI -->|"validoitu data"| AICORE
+
+    AICORE -->|"vastaus / proaktiivinen viesti"| CHANNELS
+    CHANNELS -->|"toimittajan kysymys"| AICORE
+
+    SDATA -->|"myynti & menekki\nper toimittaja"| MCP2
+    N8N -->|"broadcast\nhälytys\nkysely"| CHANNELS
+    AICORE -->|"hälytys\npoikkeama"| N8N
+    AICORE -.->|"raporttidata"| DASH
