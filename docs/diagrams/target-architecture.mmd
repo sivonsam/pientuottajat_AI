@@ -10,16 +10,50 @@ flowchart TB
         direction LR
         SA["Toimittaja A\n(Netvisor-adapteri)"]
         SB["Toimittaja B\n(Procountor-adapteri)"]
-        SC["Toimittaja C\n(muu ERP -adapteri)"]
+        SC["Toimittaja C\n(muu ERP-adapteri)"]
+    end
+
+    %% ══════════════════════════════════
+    %% TOIMITTAJAN UI-KANAVAT
+    %% ══════════════════════════════════
+    subgraph CHANNELS["💬 TOIMITTAJAN KÄYTTÖLIITTYMÄT"]
+        direction LR
+        WA["📱 WhatsApp\nBusiness API\nkeskustelu & hälytykset"]
+        TG["📱 Telegram\nBot API\nvaravkanava"]
+        PORTAL["🌐 Toimittajaportaali\nNext.js / React\nS3 + CloudFront\n\nDashboard:\n• toimitukset\n• myynti & menekki\n• reklamaatiot\n• laskut\n• ennusteet"]
     end
 
     %% ══════════════════════════════════
     %% SUPPLIER API
     %% ══════════════════════════════════
     subgraph SAPI["📡 SUPPLIER API  (AWS API Gateway + Lambda)"]
-        direction LR
-        INGEST["Ingest Lambda\nvalidointi & normalisointi"]
-        APIKEY["API Key Auth\nper toimittaja"]
+        INGEST["Ingest Lambda\nvalidointi & normalisointi\n→ DynamoDB"]
+        APIKEY["Cognito / API Key\nAuth per toimittaja"]
+    end
+
+    %% ══════════════════════════════════
+    %% BEDROCK AGENT + MCP
+    %% ══════════════════════════════════
+    subgraph AICORE["🧠 BEDROCK AGENT + MCP  (AI-orkestraattori)"]
+        direction TB
+
+        AGENT["🤖 Bedrock Agent\nAmazon Nova Pro\n\nTehtävät:\n• ymmärtää toimittajan kysymyksen\n• valitsee oikeat MCP-työkalut\n• yhdistelee datan vastaukseksi\n• päättää proaktiivisista viesteistä\n• muistaa kontekstin"]
+
+        subgraph MCP["⚙️ MCP TOOL LAYER  (Action Groups)"]
+            direction LR
+            T1["📦 get_deliveries\nhae toimitushistoria\n& poikkeamat"]
+            T2["📊 get_sales_data\nkysy Snowflakesta\nmyynti per kauppa"]
+            T3["🚨 get_reclamations\nhae & luo\nreklamaatiot"]
+            T4["🏪 get_shelf_status\nhyllysaatavuus\n& puutteet"]
+            T5["🧾 get_invoice_status\nlaskujen tila\n& maksut"]
+            T6["📈 get_forecast\ntilausennuste\nper tuote & kauppa"]
+            T7["📣 send_notification\nlähetä proaktiivinen\nviesti kanavaan"]
+        end
+
+        MEM["💾 DynamoDB\nkeskustelumuisti\ntoimittajaprofiili\npreferenssit\n(esim. 'hälytä hyllypuutteista')"]
+
+        AGENT --> MCP
+        AGENT <--> MEM
     end
 
     %% ══════════════════════════════════
@@ -29,60 +63,37 @@ flowchart TB
         direction LR
         SNOW["❄️ Snowflake\nS-Data\nmyynti / menekki\nhyllysaatavuus\ntilausennusteet"]
         KAFKA["⚡ Confluent Kafka\nEvent streaming\ntoimituspuutteet\nhyllypuutteet\nreklamaatiot"]
-        SAP["🔷 SAP BTP\nKassadata\nTilaukset"]
+        SAP["🔷 SAP BTP\nKassadata\ntilaukset"]
     end
 
     %% ══════════════════════════════════
-    %% AI YDIN
+    %% PROAKTIIVISET HÄLYTYKSET
     %% ══════════════════════════════════
-    subgraph AICORE["🧠 AI YDIN  (AWS Bedrock)"]
-        direction TB
-        AGENT["Bedrock Agent\nAmazon Nova Pro\norkestraatio"]
-        subgraph MCP["MCP Tool Layer"]
-            T1["Supplier data\n(DynamoDB)"]
-            T2["S-Data query\n(Snowflake connector)"]
-            T3["Event listener\n(Kafka consumer)"]
-            T4["SAP BTP query\n(kassadata)"]
-        end
-        MEM["DynamoDB\nmuisti & profiilit"]
-        AGENT --> MCP
-        AGENT <--> MEM
-    end
-
-    %% ══════════════════════════════════
-    %% PROAKTIIVISUUS
-    %% ══════════════════════════════════
-    subgraph PROACTIVE["⚡ PROAKTIIVISET HÄLYTYKSET  (Event-driven)"]
-        EVB["EventBridge\nsäännöt & ajastimet"]
-        ALERT["Alert Lambda\nhälytyslogiikka"]
+    subgraph PROACTIVE["⚡ PROAKTIIVISUUS  (Event-driven)"]
+        EVB["EventBridge\nSäännöt & ajastimet\n(esim. kk-raportti N. päivänä)"]
+        ALERT["Alert Lambda\nhälytyslogiikka\n(esim. hyllypuute → WhatsApp)"]
         EVB --> ALERT
-    end
-
-    %% ══════════════════════════════════
-    %% KANAVAT
-    %% ══════════════════════════════════
-    subgraph CHANNELS["💬 KANAVAT"]
-        WA["WhatsApp\nBusiness API"]
-        TG["Telegram\nBot API"]
     end
 
     %% ══════════════════════════════════
     %% YHTEYDET
     %% ══════════════════════════════════
+    SA & SB & SC -->|"REST push / webhook\nAPI key"| SAPI
+    SAPI --> INGEST
 
-    SA & SB & SC -->|"REST push\nAPI key"| SAPI
-    SAPI -->|"normalisoitu data"| T1
-    SAPI -->|"toimituseventti"| KAFKA
+    WA & TG -->|"toimittajan viesti"| AGENT
+    PORTAL -->|"REST API kutsu"| AGENT
+    AGENT -->|"vastaus"| WA & TG
+    AGENT -->|"data vastauksena"| PORTAL
 
-    SNOW <-->|"Snowflake connector\nData Sharing API"| T2
-    KAFKA -->|"eventti-stream"| T3
-    SAP -->|"OData / API"| T4
-
-    CHANNELS -->|"toimittajan viesti"| AGENT
-    AGENT -->|"vastaus"| CHANNELS
+    T2 <-->|"Snowflake connector"| SNOW
+    T4 <-->|"hyllytilanne"| SNOW
+    T6 <-->|"ennustedata"| SNOW
+    T5 <-->|"kassadata"| SAP
 
     KAFKA -->|"poikkeamaeventti"| EVB
-    ALERT -->|"proaktiivinen\nWhatsApp / Telegram"| CHANNELS
-    AGENT -->|"hälytys"| ALERT
+    KAFKA --> T3
+    ALERT -->|"proaktiivinen viesti"| WA & TG
+    AGENT --> T7 --> ALERT
 
-    SNOW -->|"myynti & ennuste\nper toimittaja"| T2
+    INGEST --> T1 & T3 & T5
