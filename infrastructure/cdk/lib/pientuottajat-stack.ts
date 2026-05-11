@@ -70,6 +70,14 @@ export class PientuottajatStack extends cdk.Stack {
       actions: ['bedrock:InvokeModel', 'bedrock:InvokeAgent'],
       resources: ['*'],
     });
+    const marketplacePolicy = new iam.PolicyStatement({
+      actions: [
+        'aws-marketplace:ViewSubscriptions',
+        'aws-marketplace:Subscribe',
+        'aws-marketplace:Unsubscribe',
+      ],
+      resources: ['*'],
+    });
 
     // ── Lambda: Webhook (toimittaja → WhatsApp → Bedrock Agent) ─────────────
     const webhookLambda = new lambda.Function(this, 'WebhookHandler', {
@@ -84,11 +92,12 @@ export class PientuottajatStack extends cdk.Stack {
         DYNAMODB_TABLE_CONVERSATIONS: conversationsTable.tableName,
         BEDROCK_AGENT_ID:           AGENT_ID,
         BEDROCK_AGENT_ALIAS_ID:     AGENT_ALIAS,
-        BEDROCK_MODEL_ID:           'anthropic.claude-3-haiku-20240307-v1:0',
+        BEDROCK_MODEL_ID:           'eu.amazon.nova-lite-v1:0',
         USE_MOCK_DATA:              'True',
       },
     });
     webhookLambda.addToRolePolicy(bedrockPolicy);
+    webhookLambda.addToRolePolicy(marketplacePolicy);
     suppliersTable.grantReadWriteData(webhookLambda);
     conversationsTable.grantReadWriteData(webhookLambda);
     waSecret.grantRead(webhookLambda);

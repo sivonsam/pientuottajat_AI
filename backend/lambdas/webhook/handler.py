@@ -23,7 +23,7 @@ WHATSAPP_PHONE_NUMBER_ID = os.environ["WHATSAPP_PHONE_NUMBER_ID"]
 WHATSAPP_VERIFY_TOKEN   = os.environ["WHATSAPP_VERIFY_TOKEN"]
 BEDROCK_AGENT_ID        = os.environ.get("BEDROCK_AGENT_ID", "")
 BEDROCK_AGENT_ALIAS_ID  = os.environ.get("BEDROCK_AGENT_ALIAS_ID", "TSTALIASID")
-BEDROCK_MODEL_ID        = os.environ.get("BEDROCK_MODEL_ID", "anthropic.claude-3-haiku-20240307-v1:0")
+BEDROCK_MODEL_ID        = os.environ.get("BEDROCK_MODEL_ID", "eu.amazon.nova-lite-v1:0")
 REGION                  = os.environ.get("AWS_REGION", "eu-west-1")
 
 bedrock_agent   = boto3.client("bedrock-agent-runtime", region_name=REGION)
@@ -133,15 +133,19 @@ def invoke_model_fallback(supplier_id: str, wa_number: str, message: str) -> str
     except Exception:
         pass
 
-    messages = history + [{"role": "user", "content": f"{message}\n\n[DATA]\n{MOCK_CONTEXT}"}]
-    body = {"anthropic_version": "bedrock-2023-05-31", "max_tokens": 600,
-            "system": SYSTEM_PROMPT, "messages": messages}
+    messages = history + [{"role": "user", "content": [{"text": f"{message}\n\n[DATA]\n{MOCK_CONTEXT}"}]}]
+    body = {
+        "messages": messages,
+        "system": [{"text": SYSTEM_PROMPT}],
+        "inferenceConfig": {"maxTokens": 600}
+    }
     try:
         resp = bedrock_runtime.invoke_model(modelId=BEDROCK_MODEL_ID,
             body=json.dumps(body), contentType="application/json", accept="application/json")
-        reply = json.loads(resp["body"].read())["content"][0]["text"]
-        history.append({"role": "user",      "content": message})
-        history.append({"role": "assistant",  "content": reply})
+        result = json.loads(resp["body"].read())
+        reply = result["output"]["message"]["content"][0]["text"]
+        history.append({"role": "user",      "content": [{"text": message}]})
+        history.append({"role": "assistant",  "content": [{"text": reply}]})
         conversations_table.put_item(Item={
             "session_id": f"wa-{wa_number}", "messages": history[-20:],
             "ttl": int(time.time()) + 86400 * 7,
