@@ -3,9 +3,6 @@ title: Pientuottajat AI — Tavoitearkkitehtuuri (Tuotanto)
 ---
 flowchart TB
 
-    %% ══════════════════════════════════
-    %% TOIMITTAJAT
-    %% ══════════════════════════════════
     subgraph SUPPLIERS["🧑‍🌾 TOIMITTAJAT"]
         direction LR
         SA["Toimittaja A\n(Netvisor-adapteri)"]
@@ -13,87 +10,73 @@ flowchart TB
         SC["Toimittaja C\n(muu ERP-adapteri)"]
     end
 
-    %% ══════════════════════════════════
-    %% TOIMITTAJAN UI-KANAVAT
-    %% ══════════════════════════════════
     subgraph CHANNELS["💬 TOIMITTAJAN KÄYTTÖLIITTYMÄT"]
         direction LR
-        WA["📱 WhatsApp\nBusiness API\nkeskustelu & hälytykset"]
-        TG["📱 Telegram\nBot API\nvaravkanava"]
-        PORTAL["🌐 Toimittajaportaali\nNext.js / React\nS3 + CloudFront\n\nDashboard:\n• toimitukset\n• myynti & menekki\n• reklamaatiot\n• laskut\n• ennusteet"]
+        WA["📱 WhatsApp\nBusiness API"]
+        TG["📱 Telegram\nBot API"]
+        PORTAL["🌐 Web-portaali\nNext.js · S3+CloudFront"]
+        ANALYTICS["📊 Analytiikkaportaali\nOpenSearch Dashboards\nToimitukset · Laskutus\nReklamaatiot · Trendit"]
     end
 
-    %% ══════════════════════════════════
-    %% SUPPLIER API
-    %% ══════════════════════════════════
     subgraph SAPI["📡 SUPPLIER API  (AWS API Gateway + Lambda)"]
-        INGEST["Ingest Lambda\nvalidointi & normalisointi\n→ DynamoDB"]
-        APIKEY["Cognito / API Key\nAuth per toimittaja"]
+        INGEST["Ingest Lambda\nvalidointi & normalisointi"]
+        APIKEY["Cognito Auth\nper toimittaja"]
     end
 
-    %% ══════════════════════════════════
-    %% BEDROCK AGENT + MCP
-    %% ══════════════════════════════════
-    subgraph AICORE["🧠 BEDROCK AGENT + MCP  (AI-orkestraattori)"]
+    subgraph AICORE["🧠 BEDROCK AGENT + MCP"]
         direction TB
-
-        AGENT["🤖 Bedrock Agent\nAmazon Nova Pro\n\nTehtävät:\n• ymmärtää toimittajan kysymyksen\n• valitsee oikeat MCP-työkalut\n• yhdistelee datan vastaukseksi\n• päättää proaktiivisista viesteistä\n• muistaa kontekstin"]
-
-        subgraph MCP["⚙️ MCP TOOL LAYER  (Action Groups)"]
+        AGENT["🤖 Bedrock Agent\nAmazon Nova Pro\nOrkestraattori"]
+        subgraph MCP["⚙️ MCP Tool Layer"]
             direction LR
-            T1["📦 get_deliveries\nhae toimitushistoria\n& poikkeamat"]
-            T2["📊 get_sales_data\nkysy Snowflakesta\nmyynti per kauppa"]
-            T3["🚨 get_reclamations\nhae & luo\nreklamaatiot"]
-            T4["🏪 get_shelf_status\nhyllysaatavuus\n& puutteet"]
-            T5["🧾 get_invoice_status\nlaskujen tila\n& maksut"]
-            T6["📈 get_forecast\ntilausennuste\nper tuote & kauppa"]
-            T7["📣 send_notification\nlähetä proaktiivinen\nviesti kanavaan"]
+            T1["get_deliveries\nDynamoDB"]
+            T2["get_sales_data\nSnowflake"]
+            T3["get_reclamations\nDynamoDB+Kafka"]
+            T4["get_shelf_status\nSnowflake"]
+            T5["get_invoice_status\nSAP BTP"]
+            T6["get_forecast\nSnowflake"]
+            T7["send_notification\nWhatsApp/Telegram"]
         end
-
-        MEM["💾 DynamoDB\nkeskustelumuisti\ntoimittajaprofiili\npreferenssit\n(esim. 'hälytä hyllypuutteista')"]
-
+        MEM["💾 DynamoDB\nmuisti & profiilit"]
         AGENT --> MCP
         AGENT <--> MEM
     end
 
-    %% ══════════════════════════════════
-    %% S-RYHMÄ CORE SYSTEMS
-    %% ══════════════════════════════════
-    subgraph SGROUP["🏪 S-RYHMÄ — OLEMASSA OLEVAT JÄRJESTELMÄT"]
+    subgraph ANALYTICS_STACK["📊 ANALYTIIKKAPINO  (Apache 2.0 — Lisenssivapaa)"]
         direction LR
-        SNOW["❄️ Snowflake\nS-Data\nmyynti / menekki\nhyllysaatavuus\ntilausennusteet"]
-        KAFKA["⚡ Confluent Kafka\nEvent streaming\ntoimituspuutteet\nhyllypuutteet\nreklamaatiot"]
-        SAP["🔷 SAP BTP\nKassadata\ntilaukset"]
+        ETL["ETL Lambda\ndata normalisointi\n& indeksointi"]
+        OS["🔍 Amazon OpenSearch\nService\n(Apache 2.0 fork)"]
+        OSD["📊 OpenSearch\nDashboards\n(Kibana-look)\nToimitukset\nLaskutus\nReklamaatiot\nTrendit"]
+        ETL --> OS --> OSD
     end
 
-    %% ══════════════════════════════════
-    %% PROAKTIIVISET HÄLYTYKSET
-    %% ══════════════════════════════════
-    subgraph PROACTIVE["⚡ PROAKTIIVISUUS  (Event-driven)"]
-        EVB["EventBridge\nSäännöt & ajastimet\n(esim. kk-raportti N. päivänä)"]
-        ALERT["Alert Lambda\nhälytyslogiikka\n(esim. hyllypuute → WhatsApp)"]
+    subgraph SGROUP["🏪 S-RYHMÄ — OLEMASSA OLEVAT JÄRJESTELMÄT"]
+        direction LR
+        SNOW["❄️ Snowflake\nS-Data"]
+        KAFKA["⚡ Confluent Kafka\nEvent streaming"]
+        SAP["🔷 SAP BTP\nKassadata"]
+    end
+
+    subgraph PROACTIVE["⚡ PROAKTIIVISUUS"]
+        EVB["EventBridge\najastimet"]
+        ALERT["Alert Lambda\nhälytyslogiikka"]
         EVB --> ALERT
     end
 
-    %% ══════════════════════════════════
-    %% YHTEYDET
-    %% ══════════════════════════════════
-    SA & SB & SC -->|"REST push / webhook\nAPI key"| SAPI
+    SA & SB & SC -->|"REST push / API key"| SAPI
     SAPI --> INGEST
 
     WA & TG -->|"toimittajan viesti"| AGENT
-    PORTAL -->|"REST API kutsu"| AGENT
+    PORTAL <-->|"REST API"| AGENT
     AGENT -->|"vastaus"| WA & TG
-    AGENT -->|"data vastauksena"| PORTAL
 
     T2 <-->|"Snowflake connector"| SNOW
-    T4 <-->|"hyllytilanne"| SNOW
-    T6 <-->|"ennustedata"| SNOW
-    T5 <-->|"kassadata"| SAP
-
-    KAFKA -->|"poikkeamaeventti"| EVB
+    T4 & T6 <-->|"S-Data"| SNOW
+    T5 <-->|"OData"| SAP
     KAFKA --> T3
-    ALERT -->|"proaktiivinen viesti"| WA & TG
-    AGENT --> T7 --> ALERT
+    KAFKA --> EVB
+    ALERT --> WA & TG
 
-    INGEST --> T1 & T3 & T5
+    INGEST -->|"toimittajadata"| ETL
+    SNOW -->|"myynti & menekki\nper toimittaja"| ETL
+
+    ANALYTICS_STACK --> ANALYTICS
