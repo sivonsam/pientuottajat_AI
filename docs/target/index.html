@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pientuottajat AI — Tavoitetila</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .gradient-hero { background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f4c2a 100%); }
+    .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+    .tab-active { border-bottom: 3px solid #16a34a; color: #16a34a; font-weight: 600; }
+    .tab-btn { transition: all 0.2s; }
+    .flow-arrow { color: #94a3b8; font-size: 1.5rem; }
+    .wa-bubble { background: #dcf8c6; border-radius: 16px 16px 4px 16px; }
+    .wa-bubble-in { background: #ffffff; border-radius: 16px 16px 16px 4px; }
+    .pulse-dot { animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .arch-box { border: 2px solid; border-radius: 12px; padding: 16px; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+  <!-- HERO -->
+  <div class="gradient-hero text-white py-16 px-6">
+    <div class="max-w-5xl mx-auto text-center">
+      <div class="inline-flex items-center gap-2 bg-green-500/20 border border-green-400/30 rounded-full px-4 py-1 text-green-300 text-sm mb-6">
+        <span class="pulse-dot w-2 h-2 bg-green-400 rounded-full inline-block"></span>
+        Live demo · AWS eu-west-1
+      </div>
+      <h1 class="text-4xl md:text-5xl font-800 font-extrabold mb-4 leading-tight">
+        Pientuottajat AI
+      </h1>
+      <p class="text-xl text-blue-200 mb-3">Älykäs agenttinen ratkaisu pientuottajille & alueosuuskaupoille</p>
+      <p class="text-gray-300 max-w-2xl mx-auto text-base">
+        Toimittaja saa myyntidata, toimitukset, reklamaatiot ja hyllysaatavuuden reaaliajassa —
+        WhatsAppista tai selaimesta — ilman uutta sovellusta.
+      </p>
+      <div class="flex flex-wrap justify-center gap-3 mt-8">
+        <span class="bg-white/10 border border-white/20 rounded-full px-4 py-1.5 text-sm">📱 WhatsApp</span>
+        <span class="bg-white/10 border border-white/20 rounded-full px-4 py-1.5 text-sm">🌐 Web-portaali</span>
+        <span class="bg-white/10 border border-white/20 rounded-full px-4 py-1.5 text-sm">🧠 Amazon Bedrock Agent</span>
+        <span class="bg-white/10 border border-white/20 rounded-full px-4 py-1.5 text-sm">❄️ Snowflake / S-Data</span>
+        <span class="bg-white/10 border border-white/20 rounded-full px-4 py-1.5 text-sm">⚡ Confluent Kafka</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
+    <div class="max-w-5xl mx-auto flex gap-0 overflow-x-auto">
+      <button onclick="showTab('whatsapp')" id="tab-whatsapp" class="tab-btn tab-active px-6 py-4 text-sm whitespace-nowrap">📱 WhatsApp-kokemus</button>
+      <button onclick="showTab('portal')" id="tab-portal" class="tab-btn px-6 py-4 text-sm text-gray-500 whitespace-nowrap">🌐 Web-portaali</button>
+      <button onclick="showTab('agent')" id="tab-agent" class="tab-btn px-6 py-4 text-sm text-gray-500 whitespace-nowrap">🧠 Agenttiarkkitehtuuri</button>
+      <button onclick="showTab('arch')" id="tab-arch" class="tab-btn px-6 py-4 text-sm text-gray-500 whitespace-nowrap">🏗️ Tavoitearkkitehtuuri</button>
+    </div>
+  </div>
+
+  <div class="max-w-5xl mx-auto px-4 py-10">
+
+    <!-- TAB 1: WHATSAPP -->
+    <div id="panel-whatsapp">
+      <div class="grid md:grid-cols-2 gap-8 items-start">
+
+        <!-- Phone mockup -->
+        <div class="flex justify-center">
+          <div class="w-72 bg-gray-800 rounded-3xl p-3 shadow-2xl">
+            <div class="bg-white rounded-2xl overflow-hidden">
+              <!-- WA header -->
+              <div class="bg-[#075e54] text-white px-4 py-3 flex items-center gap-3">
+                <div class="w-9 h-9 bg-green-400 rounded-full flex items-center justify-center font-bold text-sm">AI</div>
+                <div>
+                  <div class="font-semibold text-sm">Pientuottajat AI</div>
+                  <div class="text-xs text-green-200">● Online</div>
+                </div>
+              </div>
+              <!-- Chat -->
+              <div class="bg-[#ece5dd] p-3 space-y-2 min-h-64 text-xs">
+                <div class="wa-bubble-in p-2.5 max-w-52 shadow-sm">
+                  Hei! Mikä oli viime viikon myyntini Tampereen Prismassa?
+                </div>
+                <div class="wa-bubble p-2.5 max-w-56 ml-auto shadow-sm">
+                  📊 <strong>Viikko 18, Tampere Prisma:</strong><br/>
+                  Luomutomatti 400g: <strong>127 kpl</strong> (+12% vs edellinen vko)<br/>
+                  Kurpitsa 1kg: <strong>43 kpl</strong><br/>
+                  Myynti yhteensä: <strong>€284</strong>
+                </div>
+                <div class="wa-bubble-in p-2.5 max-w-52 shadow-sm">
+                  Onko minulla avoimia reklamaatioita?
+                </div>
+                <div class="wa-bubble p-2.5 max-w-56 ml-auto shadow-sm">
+                  🚨 <strong>1 avoin reklamaatio:</strong><br/>
+                  Toimitus 14.5 — pakkausvirhe<br/>
+                  Tila: <span class="text-orange-600 font-semibold">Käsittelyssä</span><br/>
+                  Hyvitys: €18.40 (odottaa hyväksyntää)
+                </div>
+                <div class="wa-bubble p-2.5 max-w-56 ml-auto shadow-sm bg-green-100">
+                  🔔 <strong>Automaattinen hälytys:</strong><br/>
+                  Luomukurpitsa — hyllypuute Lielahti! Saatavuus: 0%. Toimita lisää perjantaihin mennessä.
+                </div>
+              </div>
+              <!-- WA input -->
+              <div class="bg-white px-3 py-2 flex items-center gap-2 border-t">
+                <div class="flex-1 bg-gray-100 rounded-full px-3 py-1.5 text-xs text-gray-400">Kirjoita viesti...</div>
+                <div class="w-7 h-7 bg-[#075e54] rounded-full flex items-center justify-center text-white text-xs">➤</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Features -->
+        <div class="space-y-4">
+          <h2 class="text-2xl font-bold text-gray-800">Toimittajan WhatsApp-kokemus</h2>
+          <p class="text-gray-500">Tuttu sovellus, ei uutta asennettavaa. Toimii vanhalla Android-puhelimella.</p>
+
+          <div class="space-y-3">
+            <div class="bg-green-50 border border-green-200 rounded-xl p-4">
+              <div class="font-semibold text-green-800 mb-1">💬 Reaktiivinen — kysy mitä haluat</div>
+              <p class="text-sm text-green-700">Myyntidata, toimitushistoria, laskujen tila, tilausennusteet — luonnollisella kielellä, suomeksi.</p>
+            </div>
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+              <div class="font-semibold text-blue-800 mb-1">🔔 Proaktiivinen — hälytykset automaattisesti</div>
+              <p class="text-sm text-blue-700">Toimittaja asettaa kerran: <em>"Hälytä minulle hyllypuutteista heti"</em> — AI hoitaa lopun.</p>
+            </div>
+            <div class="bg-purple-50 border border-purple-200 rounded-xl p-4">
+              <div class="font-semibold text-purple-800 mb-1">📅 Ajastetut raportit</div>
+              <p class="text-sm text-purple-700"><em>"Kerro kuun 1. päivänä myynti edelliseltä kuulta"</em> — muistii tallentuu, toimii ikuisesti.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: PORTAL -->
+    <div id="panel-portal" class="hidden">
+      <h2 class="text-2xl font-bold mb-2">🌐 Toimittajan Web-portaali</h2>
+      <p class="text-gray-500 mb-8">Sama data kuin WhatsAppissa — visuaalisena dashboardina selaimessa. Ei asennettavaa.</p>
+
+      <!-- Browser mockup -->
+      <div class="bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
+        <!-- Browser chrome -->
+        <div class="bg-gray-700 px-4 py-2.5 flex items-center gap-3">
+          <div class="flex gap-1.5"><div class="w-3 h-3 bg-red-400 rounded-full"></div><div class="w-3 h-3 bg-yellow-400 rounded-full"></div><div class="w-3 h-3 bg-green-400 rounded-full"></div></div>
+          <div class="flex-1 bg-gray-600 rounded text-gray-300 text-xs px-3 py-1">portal.pientuottajat.fi · Matti Virtanen, Virtasen Tila Oy</div>
+        </div>
+        <!-- Portal content -->
+        <div class="bg-gray-50 p-5">
+          <!-- Top nav -->
+          <div class="flex items-center justify-between mb-5">
+            <div>
+              <div class="font-bold text-gray-800">Virtasen Tila Oy</div>
+              <div class="text-xs text-gray-400">Toimittajatunnus #VT-0042 · Pirkanmaa</div>
+            </div>
+            <div class="flex gap-2">
+              <span class="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full font-medium">● Aktiivinen</span>
+              <div class="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center text-white text-xs font-bold">MV</div>
+            </div>
+          </div>
+
+          <!-- KPI cards -->
+          <div class="grid grid-cols-4 gap-3 mb-5">
+            <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100">
+              <div class="text-xs text-gray-400 mb-1">Myynti tällä kuulla</div>
+              <div class="text-xl font-bold text-gray-800">€1 248</div>
+              <div class="text-xs text-green-600 font-medium">▲ +8% vs edellinen</div>
+            </div>
+            <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100">
+              <div class="text-xs text-gray-400 mb-1">Avoimet toimitukset</div>
+              <div class="text-xl font-bold text-gray-800">3</div>
+              <div class="text-xs text-blue-600 font-medium">Seuraava: 16.5</div>
+            </div>
+            <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100">
+              <div class="text-xs text-gray-400 mb-1">Reklamaatiot</div>
+              <div class="text-xl font-bold text-orange-500">1</div>
+              <div class="text-xs text-orange-500 font-medium">Käsittelyssä</div>
+            </div>
+            <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100">
+              <div class="text-xs text-gray-400 mb-1">Hyllysaatavuus</div>
+              <div class="text-xl font-bold text-green-600">94%</div>
+              <div class="text-xs text-gray-400">Tampere, Lahti, Turku</div>
+            </div>
+          </div>
+
+          <!-- Charts row -->
+          <div class="grid grid-cols-3 gap-3 mb-5">
+            <!-- Mini bar chart -->
+            <div class="col-span-2 bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+              <div class="font-semibold text-sm mb-3 text-gray-700">Viikoittainen myynti — Luomutomatti 400g</div>
+              <div class="flex items-end gap-2 h-16">
+                <div class="flex flex-col items-center gap-1"><div class="w-8 bg-green-200 rounded-t" style="height:35%"></div><div class="text-xs text-gray-400">Vk14</div></div>
+                <div class="flex flex-col items-center gap-1"><div class="w-8 bg-green-300 rounded-t" style="height:55%"></div><div class="text-xs text-gray-400">Vk15</div></div>
+                <div class="flex flex-col items-center gap-1"><div class="w-8 bg-green-400 rounded-t" style="height:70%"></div><div class="text-xs text-gray-400">Vk16</div></div>
+                <div class="flex flex-col items-center gap-1"><div class="w-8 bg-green-500 rounded-t" style="height:80%"></div><div class="text-xs text-gray-400">Vk17</div></div>
+                <div class="flex flex-col items-center gap-1"><div class="w-8 bg-green-600 rounded-t" style="height:100%"></div><div class="text-xs text-gray-400">Vk18</div></div>
+                <div class="flex flex-col items-center gap-1 ml-3"><div class="w-8 bg-blue-200 rounded-t border-2 border-dashed border-blue-400" style="height:90%"></div><div class="text-xs text-blue-400">Vk19 enn.</div></div>
+              </div>
+            </div>
+
+            <!-- Shelf status -->
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+              <div class="font-semibold text-sm mb-3 text-gray-700">Hyllysaatavuus</div>
+              <div class="space-y-2">
+                <div><div class="flex justify-between text-xs mb-0.5"><span>Tampere</span><span class="font-medium text-green-600">98%</span></div><div class="bg-gray-100 rounded-full h-1.5"><div class="bg-green-500 h-1.5 rounded-full" style="width:98%"></div></div></div>
+                <div><div class="flex justify-between text-xs mb-0.5"><span>Lahti</span><span class="font-medium text-green-600">91%</span></div><div class="bg-gray-100 rounded-full h-1.5"><div class="bg-green-400 h-1.5 rounded-full" style="width:91%"></div></div></div>
+                <div><div class="flex justify-between text-xs mb-0.5"><span>Turku</span><span class="font-medium text-orange-500">72%</span></div><div class="bg-gray-100 rounded-full h-1.5"><div class="bg-orange-400 h-1.5 rounded-full" style="width:72%"></div></div></div>
+                <div><div class="flex justify-between text-xs mb-0.5"><span>Lielahti</span><span class="font-medium text-red-500">0%</span></div><div class="bg-gray-100 rounded-full h-1.5"><div class="bg-red-500 h-1.5 rounded-full" style="width:1%"></div></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alerts -->
+          <div class="bg-red-50 border border-red-200 rounded-xl p-3 flex items-start gap-3">
+            <span class="text-red-500 text-lg">🚨</span>
+            <div>
+              <div class="font-semibold text-red-700 text-sm">Hyllypuute — Lielahti, Luomukurpitsa 1kg</div>
+              <div class="text-xs text-red-600">Saatavuus 0% · Hälytys lähetetty WhatsAppiin 13:42 · Toimita lisää pe 17.5 mennessä</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: AGENT -->
+    <div id="panel-agent" class="hidden">
+      <h2 class="text-2xl font-bold mb-2">🧠 Agenttiarkkitehtuuri</h2>
+      <p class="text-gray-500 mb-8">Bedrock Agent + MCP Tool Layer — yksi älykkäinen ydin palvelee kaikkia kanavia.</p>
+
+      <!-- Agent flow -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
+        <div class="flex flex-col md:flex-row items-center gap-4 text-center text-sm">
+          <div class="bg-green-50 border-2 border-green-300 rounded-xl p-4 flex-1">
+            <div class="text-2xl mb-1">📱</div>
+            <div class="font-semibold text-green-800">Kanava</div>
+            <div class="text-xs text-green-600 mt-1">WhatsApp / Telegram / Web</div>
+            <div class="text-xs text-gray-500 mt-1 italic">"Mikä oli viime viikon myynti?"</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="bg-blue-50 border-2 border-blue-300 rounded-xl p-4 flex-1">
+            <div class="text-2xl mb-1">🧠</div>
+            <div class="font-semibold text-blue-800">Bedrock Agent</div>
+            <div class="text-xs text-blue-600 mt-1">Amazon Nova Pro</div>
+            <div class="text-xs text-gray-500 mt-1 italic">Ymmärtää intention → valitsee työkalut</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="bg-purple-50 border-2 border-purple-300 rounded-xl p-4 flex-1">
+            <div class="text-2xl mb-1">⚙️</div>
+            <div class="font-semibold text-purple-800">MCP Tools</div>
+            <div class="text-xs text-purple-600 mt-1">7 toimintotyökalua</div>
+            <div class="text-xs text-gray-500 mt-1 italic">Hakee oikean datan oikeasta lähteestä</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="bg-orange-50 border-2 border-orange-300 rounded-xl p-4 flex-1">
+            <div class="text-2xl mb-1">💬</div>
+            <div class="font-semibold text-orange-800">Vastaus</div>
+            <div class="text-xs text-orange-600 mt-1">Luonnollinen kieli, suomi</div>
+            <div class="text-xs text-gray-500 mt-1 italic">"Viikolla 18 myit 127 kpl..."</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MCP Tools -->
+      <h3 class="font-bold text-lg mb-4 text-gray-700">⚙️ MCP Tool Layer — 7 toimintotyökalua</h3>
+      <div class="grid md:grid-cols-2 gap-3 mb-6">
+        <div class="bg-white border border-gray-200 rounded-xl p-4 card-hover">
+          <div class="flex items-start gap-3">
+            <span class="text-2xl">📊</span>
+            <div>
+              <div class="font-semibold text-sm">get_sales_data</div>
+              <div class="text-xs text-gray-500 mt-0.5">Myynti per tuote, kauppa ja ajanjakso</div>
+              <div class="text-xs text-blue-600 mt-1">Lähde: ❄️ Snowflake / S-Data</div>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-xl p-4 card-hover">
+          <div class="flex items-start gap-3">
+            <span class="text-2xl">📦</span>
+            <div>
+              <div class="font-semibold text-sm">get_deliveries</div>
+              <div class="text-xs text-gray-500 mt-0.5">Toimitushistoria ja avoimet toimitukset</div>
+              <div class="text-xs text-green-600 mt-1">Lähde: Supplier API → DynamoDB</div>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-xl p-4 card-hover">
+          <div class="flex items-start gap-3">
+            <span class="text-2xl">🏪</span>
+            <div>
+              <div class="font-semibold text-sm">get_shelf_status</div>
+              <div class="text-xs text-gray-500 mt-0.5">Hyllysaatavuus per myymälä reaaliajassa</div>
+              <div class="text-xs text-blue-600 mt-1">Lähde: ❄️ Snowflake / S-Data</div>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-xl p-4 card-hover">
+          <div class="flex items-start gap-3">
+            <span class="text-2xl">🚨</span>
+            <div>
+              <div class="font-semibold text-sm">get_reclamations</div>
+              <div class="text-xs text-gray-500 mt-0.5">Reklamaatioiden haku ja uuden luominen</div>
+              <div class="text-xs text-orange-600 mt-1">Lähde: DynamoDB + ⚡ Kafka events</div>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-xl p-4 card-hover">
+          <div class="flex items-start gap-3">
+            <span class="text-2xl">🧾</span>
+            <div>
+              <div class="font-semibold text-sm">get_invoice_status</div>
+              <div class="text-xs text-gray-500 mt-0.5">Laskujen tila ja maksuhistoria</div>
+              <div class="text-xs text-purple-600 mt-1">Lähde: 🔷 SAP BTP</div>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-xl p-4 card-hover">
+          <div class="flex items-start gap-3">
+            <span class="text-2xl">📈</span>
+            <div>
+              <div class="font-semibold text-sm">get_forecast</div>
+              <div class="text-xs text-gray-500 mt-0.5">Tilausennuste seuraavat 4 viikkoa</div>
+              <div class="text-xs text-blue-600 mt-1">Lähde: ❄️ Snowflake ennustemalli</div>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-xl p-4 card-hover md:col-span-2">
+          <div class="flex items-start gap-3">
+            <span class="text-2xl">📣</span>
+            <div>
+              <div class="font-semibold text-sm">send_notification</div>
+              <div class="text-xs text-gray-500 mt-0.5">Proaktiivinen viesti kanavaan — hälytys, raportti tai kysely</div>
+              <div class="text-xs text-green-600 mt-1">Kanava: WhatsApp Business API / Telegram Bot API</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Memory -->
+      <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 flex gap-3">
+        <span class="text-2xl">💾</span>
+        <div>
+          <div class="font-semibold text-yellow-800">Toimittajan muisti (DynamoDB)</div>
+          <p class="text-sm text-yellow-700 mt-1">Agentti muistaa toimittajan preferenssit pysyvästi: <em>"Hälytä hyllypuutteista heti"</em>, <em>"Lähetä kuukausiraportti 1. päivä"</em>, <em>"Kerro vain Tampere-alueen kaupat"</em>. Asetetaan kerran, toimii aina.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: ARCH -->
+    <div id="panel-arch" class="hidden">
+      <h2 class="text-2xl font-bold mb-2">🏗️ Tavoitearkkitehtuuri</h2>
+      <p class="text-gray-500 mb-8">Modulaarinen, event-driven ratkaisu S-ryhmän olemassa olevaan infraan.</p>
+
+      <!-- Architecture diagram -->
+      <div class="space-y-4">
+
+        <!-- Row 1: Suppliers -->
+        <div class="bg-orange-50 border-2 border-orange-200 rounded-2xl p-5">
+          <div class="text-xs font-semibold text-orange-500 uppercase tracking-wider mb-3">🧑‍🌾 Toimittajat — Heterogeeninen ERP-ympäristö</div>
+          <div class="flex flex-wrap gap-3">
+            <div class="bg-white border border-orange-200 rounded-lg px-4 py-2 text-sm text-center shadow-sm"><div class="font-medium">Netvisor</div><div class="text-xs text-gray-400">REST adapteri</div></div>
+            <div class="bg-white border border-orange-200 rounded-lg px-4 py-2 text-sm text-center shadow-sm"><div class="font-medium">Procountor</div><div class="text-xs text-gray-400">REST adapteri</div></div>
+            <div class="bg-white border border-orange-200 rounded-lg px-4 py-2 text-sm text-center shadow-sm"><div class="font-medium">Lemonsoft</div><div class="text-xs text-gray-400">REST adapteri</div></div>
+            <div class="bg-white border border-orange-200 rounded-lg px-4 py-2 text-sm text-center shadow-sm"><div class="font-medium">Muu ERP</div><div class="text-xs text-gray-400">Webhook</div></div>
+          </div>
+        </div>
+
+        <div class="text-center text-gray-400 text-sm">↓ REST push / API Key per toimittaja ↓</div>
+
+        <!-- Row 2: Supplier API -->
+        <div class="bg-green-50 border-2 border-green-300 rounded-2xl p-5">
+          <div class="text-xs font-semibold text-green-600 uppercase tracking-wider mb-3">📡 Supplier API — Meidän rakentama standardirajapinta (AWS API Gateway + Lambda)</div>
+          <div class="flex flex-wrap gap-3 text-sm">
+            <span class="bg-white border border-green-200 rounded-lg px-3 py-1.5 shadow-sm">POST /deliveries</span>
+            <span class="bg-white border border-green-200 rounded-lg px-3 py-1.5 shadow-sm">POST /invoices</span>
+            <span class="bg-white border border-green-200 rounded-lg px-3 py-1.5 shadow-sm">POST /reclamations</span>
+            <span class="bg-white border border-green-200 rounded-lg px-3 py-1.5 shadow-sm">POST /inventory</span>
+            <span class="bg-white border border-green-200 rounded-lg px-3 py-1.5 shadow-sm font-medium text-green-700">Cognito Auth</span>
+          </div>
+        </div>
+
+        <div class="text-center text-gray-400 text-sm">↓ validoitu data ↓</div>
+
+        <!-- Row 3: AI Core -->
+        <div class="bg-blue-50 border-2 border-blue-300 rounded-2xl p-5">
+          <div class="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-3">🧠 AI Ydin — AWS Bedrock Agent + MCP Tool Layer</div>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div>
+              <div class="font-semibold text-sm text-blue-800 mb-2">Bedrock Agent (Amazon Nova Pro)</div>
+              <ul class="text-xs text-blue-700 space-y-1">
+                <li>• Intention ymmärtäminen (NLU)</li>
+                <li>• MCP-työkalujen orkestrointi</li>
+                <li>• Vastauksen generointi suomeksi</li>
+                <li>• Proaktiivisten viestien päätökset</li>
+                <li>• Muistin hallinta (DynamoDB)</li>
+              </ul>
+            </div>
+            <div>
+              <div class="font-semibold text-sm text-blue-800 mb-2">MCP Tools → Datalähteet</div>
+              <ul class="text-xs text-blue-700 space-y-1">
+                <li>❄️ get_sales_data → Snowflake / S-Data</li>
+                <li>📦 get_deliveries → DynamoDB</li>
+                <li>🏪 get_shelf_status → Snowflake</li>
+                <li>🧾 get_invoice_status → SAP BTP</li>
+                <li>📈 get_forecast → Snowflake</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-4">
+          <div class="text-center text-gray-400 text-sm col-span-1">↙ vastaus</div>
+          <div class="text-center text-gray-400 text-sm col-span-1">↕ data sync</div>
+          <div class="text-center text-gray-400 text-sm col-span-1">↘ eventit</div>
+        </div>
+
+        <!-- Row 4: Three columns -->
+        <div class="grid md:grid-cols-3 gap-4">
+          <!-- Channels -->
+          <div class="bg-green-50 border-2 border-green-300 rounded-2xl p-4">
+            <div class="text-xs font-semibold text-green-600 uppercase tracking-wider mb-3">💬 Kanavat</div>
+            <div class="space-y-2">
+              <div class="bg-white border border-green-200 rounded-lg p-2.5 text-sm shadow-sm">
+                <div class="font-medium">📱 WhatsApp</div>
+                <div class="text-xs text-gray-400">Meta Business API</div>
+              </div>
+              <div class="bg-white border border-green-200 rounded-lg p-2.5 text-sm shadow-sm">
+                <div class="font-medium">📱 Telegram</div>
+                <div class="text-xs text-gray-400">Bot API (backup)</div>
+              </div>
+              <div class="bg-white border border-green-200 rounded-lg p-2.5 text-sm shadow-sm">
+                <div class="font-medium">🌐 Web-portaali</div>
+                <div class="text-xs text-gray-400">Next.js · S3 + CloudFront</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S-Group systems -->
+          <div class="bg-blue-50 border-2 border-blue-300 rounded-2xl p-4">
+            <div class="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-3">🏪 S-ryhmä Data</div>
+            <div class="space-y-2">
+              <div class="bg-white border border-blue-200 rounded-lg p-2.5 text-sm shadow-sm">
+                <div class="font-medium">❄️ Snowflake / S-Data</div>
+                <div class="text-xs text-gray-400">Myynti, menekki, ennuste, hylly</div>
+              </div>
+              <div class="bg-white border border-blue-200 rounded-lg p-2.5 text-sm shadow-sm">
+                <div class="font-medium">⚡ Confluent Kafka</div>
+                <div class="text-xs text-gray-400">Event streaming, hälytykset</div>
+              </div>
+              <div class="bg-white border border-blue-200 rounded-lg p-2.5 text-sm shadow-sm">
+                <div class="font-medium">🔷 SAP BTP</div>
+                <div class="text-xs text-gray-400">Kassadata, tilaukset</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Proactive -->
+          <div class="bg-orange-50 border-2 border-orange-300 rounded-2xl p-4">
+            <div class="text-xs font-semibold text-orange-600 uppercase tracking-wider mb-3">⚡ Proaktiivisuus</div>
+            <div class="space-y-2">
+              <div class="bg-white border border-orange-200 rounded-lg p-2.5 text-sm shadow-sm">
+                <div class="font-medium">EventBridge</div>
+                <div class="text-xs text-gray-400">Ajastimet & säännöt</div>
+              </div>
+              <div class="bg-white border border-orange-200 rounded-lg p-2.5 text-sm shadow-sm">
+                <div class="font-medium">Kafka consumer</div>
+                <div class="text-xs text-gray-400">Reaaliaikaiset poikkeamat</div>
+              </div>
+              <div class="bg-white border border-orange-200 rounded-lg p-2.5 text-sm shadow-sm">
+                <div class="font-medium">Alert Lambda</div>
+                <div class="text-xs text-gray-400">Hälytyslogiikka & lähetys</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Journey roadmap -->
+      <div class="mt-10">
+        <h3 class="font-bold text-lg mb-4 text-gray-700">🗺️ Toteutuspolku</h3>
+        <div class="grid md:grid-cols-3 gap-4">
+          <div class="bg-green-600 text-white rounded-2xl p-5">
+            <div class="text-xs font-semibold opacity-70 mb-2">VAIHE 1 — NYT</div>
+            <div class="font-bold text-lg mb-2">Demo & Konseptointi</div>
+            <ul class="text-sm space-y-1 opacity-90">
+              <li>✅ WhatsApp-botti live</li>
+              <li>✅ Bedrock Agent (Nova Lite)</li>
+              <li>✅ Mock-data toimii</li>
+              <li>🔧 Web-portaali (tulossa)</li>
+            </ul>
+            <div class="mt-3 text-xs opacity-60">Kustannus: ~5 €/kk</div>
+          </div>
+          <div class="bg-blue-600 text-white rounded-2xl p-5">
+            <div class="text-xs font-semibold opacity-70 mb-2">VAIHE 2 — PILOTTI</div>
+            <div class="font-bold text-lg mb-2">1–3 alueosuuskauppaa</div>
+            <ul class="text-sm space-y-1 opacity-90">
+              <li>⬜ Snowflake / S-Data integraatio</li>
+              <li>⬜ Supplier API tuotantoon</li>
+              <li>⬜ Oikeat toimittajat mukaan</li>
+              <li>⬜ Web-portaali julkaisu</li>
+            </ul>
+            <div class="mt-3 text-xs opacity-60">Kustannus: ~200–500 €/kk</div>
+          </div>
+          <div class="bg-gray-700 text-white rounded-2xl p-5">
+            <div class="text-xs font-semibold opacity-70 mb-2">VAIHE 3 — TUOTANTO</div>
+            <div class="font-bold text-lg mb-2">Koko S-ryhmä</div>
+            <ul class="text-sm space-y-1 opacity-90">
+              <li>⬜ Kaikki integraatiot (Kafka, SAP)</li>
+              <li>⬜ Multi-tenant, kaikki toimittajat</li>
+              <li>⬜ Kaupan liitto -yhteistyö</li>
+              <li>⬜ SaaS-malli / white-label</li>
+            </ul>
+            <div class="mt-3 text-xs opacity-60">Kustannus: asiakasveloitus alkaa</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="bg-gray-900 text-gray-400 text-center py-6 text-xs mt-12">
+    <p>Pientuottajat AI · Vivicta · <a href="https://github.com/sivonsam/pientuottajat_AI" class="text-green-400 hover:underline">GitHub</a> · AWS eu-west-1</p>
+  </div>
+
+  <script>
+    function showTab(tab) {
+      ['whatsapp','portal','agent','arch'].forEach(t => {
+        document.getElementById('panel-' + t).classList.add('hidden');
+        const btn = document.getElementById('tab-' + t);
+        btn.classList.remove('tab-active');
+        btn.classList.add('text-gray-500');
+      });
+      document.getElementById('panel-' + tab).classList.remove('hidden');
+      const active = document.getElementById('tab-' + tab);
+      active.classList.add('tab-active');
+      active.classList.remove('text-gray-500');
+    }
+  </script>
+</body>
+</html>
