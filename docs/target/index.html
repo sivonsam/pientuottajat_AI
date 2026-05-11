@@ -56,6 +56,7 @@
       <button onclick="showTab('analytics')" id="tab-analytics" class="tab-btn px-6 py-4 text-sm text-gray-500 whitespace-nowrap">📊 Analytiikka</button>
       <button onclick="showTab('agent')" id="tab-agent" class="tab-btn px-6 py-4 text-sm text-gray-500 whitespace-nowrap">🧠 Agenttiarkkitehtuuri</button>
       <button onclick="showTab('arch')" id="tab-arch" class="tab-btn px-6 py-4 text-sm text-gray-500 whitespace-nowrap">🏗️ Tavoitearkkitehtuuri</button>
+      <button onclick="showTab('roadmap')" id="tab-roadmap" class="tab-btn px-6 py-4 text-sm text-gray-500 whitespace-nowrap">🗺️ Etenemismalli</button>
     </div>
   </div>
 
@@ -765,14 +766,244 @@
 
   </div>
 
-  <!-- FOOTER -->
+  <!-- ROADMAP TAB CONTENT -->
+  <div class="max-w-5xl mx-auto px-4 pb-10">
+    <div id="panel-roadmap" class="hidden">
+      <h2 class="text-2xl font-bold mb-1">🗺️ Etenemismalli 2025</h2>
+      <p class="text-gray-500 mb-8">Konseptoinnista tuotantoon — sidosryhmähaastattelut, pilotti ja tuotantokäyttöönotto.</p>
+
+      <!-- Supplier segments -->
+      <div class="mb-8">
+        <h3 class="font-bold text-lg mb-3 text-gray-700">🧑‍🌾 Haastateltavat toimittajaryhmät — 3 edustajaa kustakin</h3>
+        <div class="grid md:grid-cols-3 gap-4">
+          <div class="bg-green-50 border-2 border-green-300 rounded-2xl p-5">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-2xl">🌱</span>
+              <div><div class="font-bold text-green-800">Tosipieni</div><div class="text-xs text-green-600">Mikrotuottaja, maatila, käsityöläinen</div></div>
+            </div>
+            <ul class="text-sm text-green-700 space-y-1.5">
+              <li>• Ei ERP-järjestelmää</li><li>• Ei Snowflakea</li>
+              <li>• WhatsApp ainoa digitaalinen kanava</li>
+              <li>• Lasku = paperi tai sähköposti</li>
+              <li>• 1–5 tuotetta, 1–3 kauppaa</li>
+            </ul>
+            <div class="mt-3 bg-green-100 rounded-lg p-2 text-xs text-green-700"><strong>Haaste:</strong> ATK-taidot minimit → "nolla oppimista"</div>
+          </div>
+          <div class="bg-blue-50 border-2 border-blue-300 rounded-2xl p-5">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-2xl">🏭</span>
+              <div><div class="font-bold text-blue-800">Pieni</div><div class="text-xs text-blue-600">Pientuottaja, elintarvikeyritys</div></div>
+            </div>
+            <ul class="text-sm text-blue-700 space-y-1.5">
+              <li>• Netvisor tai Procountor</li><li>• Ei Snowflakea</li>
+              <li>• Sähköposti + WhatsApp käytössä</li>
+              <li>• 5–20 tuotetta, 3–10 kauppaa</li>
+              <li>• 1–5 henkilöä</li>
+            </ul>
+            <div class="mt-3 bg-blue-100 rounded-lg p-2 text-xs text-blue-700"><strong>Haaste:</strong> Data hajallaan ERP:ssä ja Excelissä</div>
+          </div>
+          <div class="bg-purple-50 border-2 border-purple-300 rounded-2xl p-5">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-2xl">🏢</span>
+              <div><div class="font-bold text-purple-800">Keskisuuri</div><div class="text-xs text-purple-600">Alueellinen tuottaja / jalostaja</div></div>
+            </div>
+            <ul class="text-sm text-purple-700 space-y-1.5">
+              <li>• Lemonsoft tai Maestro ERP</li><li>• Ei Snowflakea (tai tulossa)</li>
+              <li>• IT-henkilö tai tilitoimisto</li>
+              <li>• 20–100 tuotetta, 10–30 kauppaa</li>
+              <li>• 5–50 henkilöä</li>
+            </ul>
+            <div class="mt-3 bg-purple-100 rounded-lg p-2 text-xs text-purple-700"><strong>Haaste:</strong> Monimutkaisemmat integraatiot → API-adapteri</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timeline -->
+      <h3 class="font-bold text-lg mb-4 text-gray-700">📅 Aikataulu</h3>
+      <div class="relative space-y-0">
+
+        <div class="flex gap-4 pb-0">
+          <div class="flex flex-col items-center">
+            <div class="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0">NYT</div>
+            <div class="w-0.5 bg-green-400 flex-1 min-h-8"></div>
+          </div>
+          <div class="bg-green-50 border-2 border-green-400 rounded-2xl p-5 flex-1 mb-4">
+            <div class="flex items-center justify-between mb-2">
+              <div class="font-bold text-green-800 text-lg">📱 Simulointi-demot</div>
+              <span class="bg-green-600 text-white text-xs px-3 py-1 rounded-full font-semibold">Toukokuu 2025</span>
+            </div>
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <div class="text-sm font-semibold text-green-700 mb-2">Mitä on valmiina:</div>
+                <ul class="text-sm text-green-700 space-y-1">
+                  <li>✅ WhatsApp-botti live (mock-data)</li>
+                  <li>✅ Tavoitetila-visualisointi</li>
+                  <li>✅ Arkkitehtuurikaaviot</li>
+                  <li>🔧 Web-portaali (Next.js, tulossa)</li>
+                  <li>🔧 OpenSearch demo-ympäristö</li>
+                </ul>
+              </div>
+              <div>
+                <div class="text-sm font-semibold text-green-700 mb-2">Demo näyttää:</div>
+                <ul class="text-sm text-green-700 space-y-1">
+                  <li>• WhatsApp-keskustelu (mock-data)</li>
+                  <li>• Toimittajan dashboard (mockup)</li>
+                  <li>• Analytiikkanäkymä</li>
+                  <li>• Koko arkkitehtuurin esittely</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex gap-4 pb-0">
+          <div class="flex flex-col items-center">
+            <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0">Ke–Hu</div>
+            <div class="w-0.5 bg-blue-300 flex-1 min-h-8"></div>
+          </div>
+          <div class="bg-blue-50 border-2 border-blue-400 rounded-2xl p-5 flex-1 mb-4">
+            <div class="flex items-center justify-between mb-2">
+              <div class="font-bold text-blue-800 text-lg">🎤 Sidosryhmähaastattelut</div>
+              <span class="bg-blue-600 text-white text-xs px-3 py-1 rounded-full font-semibold">Kesäkuu → Juhannus 21.6.</span>
+            </div>
+            <div class="grid md:grid-cols-3 gap-3 mb-3">
+              <div class="bg-white border border-green-200 rounded-xl p-3">
+                <div class="font-semibold text-green-700 text-sm mb-1">🌱 Tosipieni (3 hlö)</div>
+                <div class="text-xs text-gray-500">Maatalousyrittäjä · Käsityöläinen · Pienviljelijä</div>
+                <div class="text-xs text-green-600 mt-1 font-medium">Fokus: kanava & helppous</div>
+              </div>
+              <div class="bg-white border border-blue-200 rounded-xl p-3">
+                <div class="font-semibold text-blue-700 text-sm mb-1">🏭 Pieni (3 hlö)</div>
+                <div class="text-xs text-gray-500">Elintarvikeyritys · Juomavalmistaja · Leipomo</div>
+                <div class="text-xs text-blue-600 mt-1 font-medium">Fokus: ERP-integraatio</div>
+              </div>
+              <div class="bg-white border border-purple-200 rounded-xl p-3">
+                <div class="font-semibold text-purple-700 text-sm mb-1">🏢 Keskisuuri (3 hlö)</div>
+                <div class="text-xs text-gray-500">Alueellinen tuottaja · Jalostusyritys · Lähiruoka</div>
+                <div class="text-xs text-purple-600 mt-1 font-medium">Fokus: analytiikka & data</div>
+              </div>
+            </div>
+            <div class="bg-blue-100 rounded-xl p-3 text-sm text-blue-700">
+              <strong>🤖 AI-fasilitoitu:</strong> Haastattelu → Amazon Transcribe (litterointi) → Bedrock Nova Pro (tarpeiden tunnistus) → User storyt & backlog automaattisesti
+            </div>
+          </div>
+        </div>
+
+        <div class="flex gap-4 pb-0">
+          <div class="flex flex-col items-center">
+            <div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-xl flex-shrink-0">☀️</div>
+            <div class="w-0.5 bg-yellow-300 flex-1 min-h-8"></div>
+          </div>
+          <div class="bg-yellow-50 border-2 border-yellow-300 rounded-2xl p-4 flex-1 mb-4">
+            <div class="flex items-center justify-between">
+              <div class="font-bold text-yellow-800 text-lg">☀️ Kesäloma</div>
+              <span class="bg-yellow-400 text-yellow-900 text-xs px-3 py-1 rounded-full font-semibold">Heinäkuu — Elokuu vk 1–2 (~11.8. asti)</span>
+            </div>
+            <p class="text-sm text-yellow-700 mt-1">AWS-infra pyörii taustalla. Paluu ~11.8.2025.</p>
+          </div>
+        </div>
+
+        <div class="flex gap-4 pb-0">
+          <div class="flex flex-col items-center">
+            <div class="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0">Elo</div>
+            <div class="w-0.5 bg-orange-300 flex-1 min-h-8"></div>
+          </div>
+          <div class="bg-orange-50 border-2 border-orange-400 rounded-2xl p-5 flex-1 mb-4">
+            <div class="flex items-center justify-between mb-2">
+              <div class="font-bold text-orange-800 text-lg">🚀 Toiminnallinen pilotti käynnistyy</div>
+              <span class="bg-orange-500 text-white text-xs px-3 py-1 rounded-full font-semibold">31.8.2025 mennessä</span>
+            </div>
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <div class="text-sm font-semibold text-orange-700 mb-2">Pilotissa mukana:</div>
+                <ul class="text-sm text-orange-700 space-y-1">
+                  <li>• 1 alueosuuskauppa</li>
+                  <li>• 3–5 oikeaa toimittajaa (yksi per segmentti)</li>
+                  <li>• Oikea WhatsApp-numero (Meta verifioitu)</li>
+                  <li>• Haastatteluista johdetut user storyt toteutettu</li>
+                </ul>
+              </div>
+              <div>
+                <div class="text-sm font-semibold text-orange-700 mb-2">Tekniset tavoitteet:</div>
+                <ul class="text-sm text-orange-700 space-y-1">
+                  <li>• Supplier API → oikeat ERP-adapterit</li>
+                  <li>• OpenSearch dashboards live</li>
+                  <li>• Proaktiiviset hälytykset toiminnassa</li>
+                  <li>• Toimittajaportaali julkinen</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex gap-4 pb-0">
+          <div class="flex flex-col items-center">
+            <div class="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0">15.9.</div>
+            <div class="w-0.5 bg-red-300 flex-1 min-h-8"></div>
+          </div>
+          <div class="bg-red-50 border-2 border-red-400 rounded-2xl p-5 flex-1 mb-4">
+            <div class="flex items-center justify-between mb-2">
+              <div class="font-bold text-red-800 text-lg">⚙️ Tuotannon rakentaminen alkaa</div>
+              <span class="bg-red-600 text-white text-xs px-3 py-1 rounded-full font-semibold">15.9.2025</span>
+            </div>
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <div class="text-sm font-semibold text-red-700 mb-2">Integraatiot:</div>
+                <ul class="text-sm text-red-700 space-y-1">
+                  <li>• ❄️ Snowflake / S-Data kytkentä</li>
+                  <li>• ⚡ Confluent Kafka event-stream</li>
+                  <li>• 🔷 SAP BTP kassadata</li>
+                  <li>• Multi-tenant Supplier API</li>
+                </ul>
+              </div>
+              <div>
+                <div class="text-sm font-semibold text-red-700 mb-2">Skaalaus:</div>
+                <ul class="text-sm text-red-700 space-y-1">
+                  <li>• Kaikki alueosuuskaupat</li>
+                  <li>• Toimittajien onboarding-prosessi</li>
+                  <li>• Kaupan liitto -integraatio</li>
+                  <li>• SLA & monitoring (X-Ray + CloudWatch)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <div class="flex flex-col items-center">
+            <div class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0">20.11.</div>
+          </div>
+          <div class="bg-gray-800 text-white rounded-2xl p-5 flex-1">
+            <div class="flex items-center justify-between mb-2">
+              <div class="font-bold text-xl">🏁 Tuotanto valmis</div>
+              <span class="bg-white text-gray-800 text-xs px-3 py-1 rounded-full font-semibold">20.11.2025</span>
+            </div>
+            <div class="grid md:grid-cols-3 gap-4 mt-3">
+              <div class="bg-white/10 rounded-xl p-3">
+                <div class="font-semibold text-sm mb-2">✅ Toimittajat</div>
+                <ul class="text-xs text-gray-300 space-y-1"><li>• Kaikki kolme segmenttiä</li><li>• Itsepalvelu onboarding</li><li>• WhatsApp + portaali + analytiikka</li></ul>
+              </div>
+              <div class="bg-white/10 rounded-xl p-3">
+                <div class="font-semibold text-sm mb-2">✅ S-ryhmä</div>
+                <ul class="text-xs text-gray-300 space-y-1"><li>• S-Data integraatio täysi</li><li>• Kafka event-driven hälytykset</li><li>• Kaupan liitto -raportit</li></ul>
+              </div>
+              <div class="bg-white/10 rounded-xl p-3">
+                <div class="font-semibold text-sm mb-2">✅ Liiketoiminta</div>
+                <ul class="text-xs text-gray-300 space-y-1"><li>• Hinnoittelumalli sovittu</li><li>• SLA & tuki-prosessi</li><li>• Skaalautuva multi-tenant</li></ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="bg-gray-900 text-gray-400 text-center py-6 text-xs mt-12">
     <p>Pientuottajat AI · Vivicta · <a href="https://github.com/sivonsam/pientuottajat_AI" class="text-green-400 hover:underline">GitHub</a> · AWS eu-west-1</p>
   </div>
 
   <script>
     function showTab(tab) {
-      ['whatsapp','portal','analytics','agent','arch'].forEach(t => {
+      ['whatsapp','portal','analytics','agent','arch','roadmap'].forEach(t => {
         document.getElementById('panel-' + t).classList.add('hidden');
         const btn = document.getElementById('tab-' + t);
         btn.classList.remove('tab-active');
