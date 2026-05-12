@@ -1,82 +1,107 @@
 ---
 title: Pientuottajat AI — Tavoitearkkitehtuuri (Tuotanto)
 ---
-flowchart TB
+flowchart TD
 
     subgraph SUPPLIERS["🧑‍🌾 TOIMITTAJAT"]
         direction LR
-        SA["Toimittaja A\n(Netvisor-adapteri)"]
-        SB["Toimittaja B\n(Procountor-adapteri)"]
-        SC["Toimittaja C\n(muu ERP-adapteri)"]
+        S1["🌱 Tosipieni\nEi ERP · WhatsApp\nMaatila / käsityöläinen"]
+        S2["🏭 Pieni\nNetvisor / Procountor\n1–5 henkilöä"]
+        S3["🏢 Keskisuuri\nLemonsoft / Maestro\n5–50 henkilöä"]
     end
 
-    subgraph CHANNELS["💬 TOIMITTAJAN KÄYTTÖLIITTYMÄT"]
+    subgraph CHANNELS["💬 KANAVAT  —  toimittaja valitsee mieluisimman"]
         direction LR
-        WA["📱 WhatsApp\nBusiness API"]
+        WA["📱 WhatsApp\nBusiness API\n(Meta)"]
         TG["📱 Telegram\nBot API"]
-        PORTAL["🌐 Web-portaali\nNext.js · S3+CloudFront"]
-        ANALYTICS["📊 Analytiikkaportaali\nOpenSearch Dashboards\nToimitukset · Laskutus\nReklamaatiot · Trendit"]
+        PORTAL["🌐 Web-portaali\nNext.js\nS3 + CloudFront"]
+        SUPERSET["📊 Analytiikkaportaali\nApache Superset\nMyynti · Saatavuus\nHävikki · Ennuste\nAsiakasymmärrys"]
     end
 
-    subgraph SAPI["📡 SUPPLIER API  (AWS API Gateway + Lambda)"]
-        INGEST["Ingest Lambda\nvalidointi & normalisointi"]
-        APIKEY["Cognito Auth\nper toimittaja"]
+    subgraph AUTH["🔐 TUNNISTAUTUMINEN  —  AWS Cognito"]
+        direction LR
+        COG["👤 Cognito User Pool\nSSO — yksi tunnus\nkaikkiin kanaviin\nsupplier_id JWT-tokenissa"]
+        RLS["🔒 Row-Level Security\nToimittaja näkee\nvain oman datansa"]
+        COG --> RLS
     end
 
-    subgraph AICORE["🧠 BEDROCK AGENT + MCP"]
+    subgraph RESTAPI["📡 REST API  —  AWS API Gateway + Lambda"]
+        direction LR
+        GW["API Gateway\nHTTPS endpoint\n/v1/supplier/{id}/..."]
+        INGEST["Ingest Lambda\nvalidointi &\nnormalisointi"]
+        QUERY["Query Lambda\nmyynti · saatavuus\nhävikki · laskutus\nennuste · benchmark"]
+        GW --> INGEST
+        GW --> QUERY
+    end
+
+    subgraph STREAMAPI["⚡ STREAMING API  —  WebSocket + Kafka Consumer"]
+        direction LR
+        WSG["API Gateway\nWebSocket\nlivetapahtumat"]
+        KCONS["Kafka Consumer\nLambda\nConfluent-topicit"]
+        PROACT["Proactive Alert\nLambda\nEventBridge ajastimet"]
+        KCONS -->|"saatavuus & reklamaatio\ntapahtumat"| WSG
+        PROACT -->|"kynnysarvo-hälytykset"| WSG
+    end
+
+    subgraph AICORE["🧠 BEDROCK AGENT + MCP  —  Amazon Nova Pro"]
         direction TB
-        AGENT["🤖 Bedrock Agent\nAmazon Nova Pro\nOrkestraattori"]
+        AGENT["🤖 Bedrock Agent\nOrkestraattori\nText-to-SQL · Insight\nProaktiivinen analyysi"]
         subgraph MCP["⚙️ MCP Tool Layer"]
             direction LR
-            T1["get_deliveries\nDynamoDB"]
-            T2["get_sales_data\nSnowflake"]
-            T3["get_reclamations\nDynamoDB+Kafka"]
-            T4["get_shelf_status\nSnowflake"]
-            T5["get_invoice_status\nSAP BTP"]
-            T6["get_forecast\nSnowflake"]
-            T7["send_notification\nWhatsApp/Telegram"]
+            T1["get_sales\nSnowflake"]
+            T2["get_availability\nSnowflake·Kafka"]
+            T3["get_reclamations\nDynamoDB"]
+            T4["get_invoice\nSAP BTP"]
+            T5["get_forecast\nSnowflake"]
+            T6["get_benchmark\nSnowflake\n(kategoria-avg)"]
+            T7["get_customer_insight\nSnowflake\npenetraatio·osto-\nkäyttäytyminen"]
+            T8["send_alert\nWhatsApp·Telegram\nWebSocket"]
         end
-        MEM["💾 DynamoDB\nmuisti & profiilit"]
+        MEM["💾 DynamoDB\nmuisti · profiilit\nhälytysehdot"]
         AGENT --> MCP
         AGENT <--> MEM
     end
 
-    subgraph ANALYTICS_STACK["📊 ANALYTIIKKAPINO  (Apache 2.0 — Lisenssivapaa)"]
+    subgraph DATASTORE["🗄️ VÄLIVARASTO  —  AWS"]
         direction LR
-        ETL["ETL Lambda\ndata normalisointi\n& indeksointi"]
-        OS["🔍 Amazon OpenSearch\nService\n(Apache 2.0 fork)"]
-        OSD["📊 OpenSearch\nDashboards\n(Kibana-look)\nToimitukset\nLaskutus\nReklamaatiot\nTrendit"]
-        ETL --> OS --> OSD
+        DDB["💾 DynamoDB\ntoimitukset\nreklamaatiot\nkeskustelut"]
+        SQS["📨 SQS\nviestijono"]
+        EB["🕐 EventBridge\najastimet"]
     end
 
-    subgraph SGROUP["🏪 S-RYHMÄ — OLEMASSA OLEVAT JÄRJESTELMÄT"]
+    subgraph SGROUP["🏪 S-RYHMÄ  —  OLEMASSA OLEVAT TAUSTAJÄRJESTELMÄT"]
         direction LR
-        SNOW["❄️ Snowflake\nS-Data"]
-        KAFKA["⚡ Confluent Kafka\nEvent streaming"]
-        SAP["🔷 SAP BTP\nKassadata"]
+        SNOW["❄️ Snowflake\nS-Data\nPolaris REST API\nMyynti · Saatavuus\nHävikki · Ennuste\nAsiakasymmärrys"]
+        KAFKA["⚡ Confluent Kafka\nEvent streaming\nKassatapahtumat\nSaatavuusmuutokset"]
+        SAP["🔷 SAP BTP\nKassadata\nOData API"]
     end
 
-    subgraph PROACTIVE["⚡ PROAKTIIVISUUS"]
-        EVB["EventBridge\najastimet"]
-        ALERT["Alert Lambda\nhälytyslogiikka"]
-        EVB --> ALERT
-    end
+    %% Toimittajat → Kanavat
+    S1 -->|"WhatsApp / Telegram"| WA & TG
+    S2 -->|"WhatsApp · Web · Analytiikka"| WA & PORTAL & SUPERSET
+    S3 -->|"Kaikki kanavat + API-avain"| WA & PORTAL & SUPERSET
 
-    SA & SB & SC -->|"REST push / API key"| SAPI
-    SAPI --> INGEST
+    %% Kanavat → Auth
+    WA & TG & PORTAL & SUPERSET --> AUTH
 
-    WA & TG -->|"toimittajan viesti"| AGENT
-    PORTAL <-->|"REST API"| AGENT
-    AGENT -->|"vastaus"| WA & TG
+    %% Auth → API-kerrokset
+    AUTH -->|"REST-kyselyt"| RESTAPI
+    AUTH -->|"Live-tapahtumat"| STREAMAPI
 
-    T2 <-->|"Snowflake connector"| SNOW
-    T4 & T6 <-->|"S-Data"| SNOW
-    T5 <-->|"OData"| SAP
-    KAFKA --> T3
-    KAFKA --> EVB
-    ALERT --> WA & TG
+    %% REST API → AI-ydin
+    RESTAPI <-->|"AI-chat & insight"| AICORE
 
-    INGEST -->|"toimittajadata"| ETL
-    SNOW -->|"myynti & menekki\nper toimittaja"| ETL
+    %% Streaming → Kanavat (push-viestit)
+    STREAMAPI -->|"push: hälytys · reklamaatio\nlive dashboard-päivitys"| WA & TG & PORTAL & SUPERSET
 
-    ANALYTICS_STACK --> ANALYTICS
+    %% AI-ydin → Tietovarasto
+    AICORE <--> DATASTORE
+
+    %% API & AI → Taustajärjestelmät
+    RESTAPI <-->|"Polaris REST / SQL"| SNOW
+    AICORE <-->|"MCP tools"| SNOW
+    AICORE <-->|"OData"| SAP
+    KAFKA -->|"Kafka Consumer"| KCONS
+    KAFKA -->|"EventBridge Pipes"| EB
+    EB --> PROACT
+    SNOW <-->|"Secure Views\nRLS per supplier_id"| QUERY
