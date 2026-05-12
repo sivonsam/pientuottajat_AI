@@ -178,8 +178,45 @@
     .l8 .card-sub { color: #90cdf4; }
     .tag-navy { background: #2b6cb0; color: #ebf8ff; }
 
-    /* Dual-arrow row */
-    .arrow-dual {
+    /* MCP/A2A layer — teal */
+    .l-mcp { background: linear-gradient(135deg, #e6fffa 0%, #b2f5ea 100%); border: 2px solid #81e6d9; }
+    .l-mcp .layer-label { color: #234e52; }
+    .l-mcp .card { border-color: #b2f5ea; }
+    .l-mcp .card-title { color: #234e52; }
+    .tag-teal { background: #e6fffa; color: #234e52; }
+
+    /* Enterprise layer */
+    .l-ent { background: linear-gradient(135deg, #f0e6ff 0%, #d9b8ff 100%); border: 2px solid #b794f4; }
+    .l-ent .layer-label { color: #44337a; }
+    .l-ent .card { border-color: #d9b8ff; }
+    .l-ent .card-title { color: #44337a; }
+    .tag-violet { background: #f0e6ff; color: #44337a; }
+
+    /* Two-column top */
+    .top-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .top-row .layer { flex: 1; margin-bottom: 0; }
+
+    /* Four-col API row */
+    .api-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .api-row .layer { flex: 1; margin-bottom: 0; }
+
+    .divider-label {
+      font-size: 10px;
+      color: #a0aec0;
+      text-align: center;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin: 2px 0 6px;
+    }
+
       display: flex;
       justify-content: center;
       gap: 80px;
@@ -216,6 +253,275 @@
 </div>
 
 <div class="arch">
+
+  <!-- TOP ROW: Toimittajat + Enterprise -->
+  <div class="top-row">
+
+    <!-- 1a. TOIMITTAJAT -->
+    <div class="layer l1" style="flex:2">
+      <div class="layer-label">① Toimittajat</div>
+      <div class="layer-cards">
+        <div class="card">
+          <div class="card-icon">🌱</div>
+          <div class="card-title">Tosipieni</div>
+          <div class="card-sub">Maatila · käsityöläinen<br>Ei ERP</div>
+          <div class="card-tags"><span class="tag tag-blue">WhatsApp</span></div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🏭</div>
+          <div class="card-title">Pieni</div>
+          <div class="card-sub">1–5 hlö · elintarvike<br>Netvisor / Procountor</div>
+          <div class="card-tags"><span class="tag tag-blue">WhatsApp</span><span class="tag tag-blue">Web</span></div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🏢</div>
+          <div class="card-title">Keskisuuri</div>
+          <div class="card-sub">5–50 hlö · jalostaja<br>Lemonsoft / Maestro</div>
+          <div class="card-tags"><span class="tag tag-blue">WhatsApp</span><span class="tag tag-blue">Web</span><span class="tag tag-blue">API</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1b. ENTERPRISE / DEVELOPER -->
+    <div class="layer l-ent" style="flex:1">
+      <div class="layer-label">① Enterprise &amp; Kehittäjä</div>
+      <div class="layer-cards">
+        <div class="card">
+          <div class="card-icon">🏪</div>
+          <div class="card-title">S-ryhmä IT</div>
+          <div class="card-sub">Sisäiset järjestelmät<br>Omat AI-agentit<br>BI-työkalut</div>
+          <div class="card-tags"><span class="tag tag-violet">A2A</span><span class="tag tag-violet">MCP</span></div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🤝</div>
+          <div class="card-title">Kumppani / ISV</div>
+          <div class="card-sub">Kaupan liitto<br>ERP-toimittajat<br>Analytiikkakumppanit</div>
+          <div class="card-tags"><span class="tag tag-violet">MCP Client</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Arrow -->
+  <div class="arrow">
+    <div class="arrow-line"><div class="shaft"></div><div class="head"></div></div>
+    <div class="arrow-label">toimittaja valitsee kanavan · yritysasiakas valitsee protokollan</div>
+    <div class="arrow-line"><div class="shaft"></div><div class="head"></div></div>
+  </div>
+
+  <!-- 2. KANAVAT + INTEGRAATIOPROTOKOLLAT -->
+  <div class="top-row">
+
+    <!-- 2a. UI-kanavat -->
+    <div class="layer l2" style="flex:2">
+      <div class="layer-label">② UI-kanavat — toimittajille</div>
+      <div class="layer-cards">
+        <div class="card">
+          <div class="card-icon">📱</div>
+          <div class="card-title">WhatsApp</div>
+          <div class="card-sub">Business API · Meta</div>
+          <div class="card-tags"></div>
+        </div>
+        <div class="card">
+          <div class="card-icon">📱</div>
+          <div class="card-title">Telegram</div>
+          <div class="card-sub">Bot API</div>
+          <div class="card-tags"></div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🌐</div>
+          <div class="card-title">Web-portaali</div>
+          <div class="card-sub">Next.js · S3 · CloudFront</div>
+          <div class="card-tags"><span class="tag tag-green">Selain</span></div>
+        </div>
+        <div class="card">
+          <div class="card-icon">📊</div>
+          <div class="card-title">Analytiikkaportaali</div>
+          <div class="card-sub">Apache Superset<br>Myynti · Saatavuus<br>Hävikki · Benchmark</div>
+          <div class="card-tags"><span class="tag tag-green">Apache 2.0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2b. Integraatioprotokollat -->
+    <div class="layer l-mcp" style="flex:1">
+      <div class="layer-label">② Integraatioprotokollat — koneille</div>
+      <div class="layer-cards">
+        <div class="card">
+          <div class="card-icon">⚙️</div>
+          <div class="card-title">MCP Client</div>
+          <div class="card-sub">Model Context Protocol<br>Claude Desktop · Cursor<br>Custom AI assistants</div>
+          <div class="card-tags"><span class="tag tag-teal">Anthropic std</span></div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔗</div>
+          <div class="card-title">A2A Client</div>
+          <div class="card-sub">Agent-to-Agent<br>Enterprise AI agentit<br>Bedrock ↔ Bedrock</div>
+          <div class="card-tags"><span class="tag tag-teal">Google / open std</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Arrow -->
+  <div class="arrow">
+    <div class="arrow-line"><div class="shaft"></div><div class="head"></div></div>
+    <div class="arrow-label">tunnistautuminen</div>
+    <div class="arrow-line"><div class="shaft"></div><div class="head"></div></div>
+  </div>
+
+  <!-- 3. AUTH -->
+  <div class="layer l3">
+    <div class="layer-label">③ Tunnistautuminen — AWS Cognito SSO + API Keys</div>
+    <div class="layer-cards">
+      <div class="card">
+        <div class="card-icon">🔐</div>
+        <div class="card-title">Cognito User Pool</div>
+        <div class="card-sub">Yksi tunnus kaikkiin kanaviin<br>supplier_id JWT-tokenissa</div>
+        <div class="card-tags"><span class="tag tag-orange">SSO</span><span class="tag tag-orange">OAuth2</span></div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔑</div>
+        <div class="card-title">API Keys / mTLS</div>
+        <div class="card-sub">MCP &amp; A2A -yhteydet<br>Per kumppani · rotaatio<br>Scoped permissions</div>
+        <div class="card-tags"><span class="tag tag-orange">Enterprise auth</span></div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔒</div>
+        <div class="card-title">Row-Level Security</div>
+        <div class="card-sub">Toimittaja ja kumppani<br>näkevät vain sallitun datan</div>
+        <div class="card-tags"><span class="tag tag-orange">Per supplier_id</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Arrow -->
+  <div class="arrow">
+    <div class="arrow-line"><div class="shaft"></div><div class="head"></div></div>
+    <div class="arrow-label">neljä rinnakkaista pääsyprotokollaa</div>
+    <div class="arrow-line"><div class="shaft"></div><div class="head"></div></div>
+  </div>
+
+  <!-- 4. FOUR API COLUMNS -->
+  <div class="api-row">
+
+    <div class="layer l4" style="flex:1">
+      <div class="layer-label">④ REST API</div>
+      <div class="layer-cards" style="flex-direction:column">
+        <div class="card" style="max-width:100%">
+          <div class="card-icon">📡</div>
+          <div class="card-title">API Gateway + Lambda</div>
+          <div class="card-sub">Kyselypohjaiset haut<br>Myynti · Saatavuus<br>Hävikki · Laskutus<br>Ennuste · Benchmark</div>
+          <div class="card-tags"><span class="tag tag-purple">HTTPS / JSON</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="layer l5" style="flex:1">
+      <div class="layer-label">④ Streaming API</div>
+      <div class="layer-cards" style="flex-direction:column">
+        <div class="card" style="max-width:100%">
+          <div class="card-icon">⚡</div>
+          <div class="card-title">WebSocket + Kafka Consumer</div>
+          <div class="card-sub">Live-tapahtumat<br>Hällytykset · OSA<br>Reklamaatiot · Push<br>EventBridge ajastimet</div>
+          <div class="card-tags"><span class="tag tag-red">Real-time</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="layer l-mcp" style="flex:1">
+      <div class="layer-label">④ MCP Server</div>
+      <div class="layer-cards" style="flex-direction:column">
+        <div class="card" style="max-width:100%">
+          <div class="card-icon">⚙️</div>
+          <div class="card-title">MCP Tool Server</div>
+          <div class="card-sub">get_sales · get_availability<br>get_reclamations<br>get_forecast · get_benchmark<br>get_customer_insight</div>
+          <div class="card-tags"><span class="tag tag-teal">MCP Protocol</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="layer l-ent" style="flex:1">
+      <div class="layer-label">④ A2A Gateway</div>
+      <div class="layer-cards" style="flex-direction:column">
+        <div class="card" style="max-width:100%">
+          <div class="card-icon">🔗</div>
+          <div class="card-title">Agent-to-Agent Endpoint</div>
+          <div class="card-sub">Enterprise AI-agentit<br>Kutsuvat suoraan<br>Bedrock Agentia<br>Task · Skill -protokolla</div>
+          <div class="card-tags"><span class="tag tag-violet">A2A Protocol</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Arrow -->
+  <div class="arrow">
+    <div class="arrow-line"><div class="shaft"></div><div class="head"></div></div>
+    <div class="arrow-label">AI-orkestraatio · Text-to-SQL · insight · proaktiivisuus</div>
+    <div class="arrow-line"><div class="shaft"></div><div class="head"></div></div>
+  </div>
+
+  <!-- 5. AI CORE -->
+  <div class="layer l6">
+    <div class="layer-label">⑤ AI-ydin — Amazon Bedrock Agent + MCP + A2A</div>
+    <div class="layer-cards">
+      <div class="card">
+        <div class="card-icon">🤖</div>
+        <div class="card-title">Bedrock Agent</div>
+        <div class="card-sub">Amazon Nova Pro<br>Orkestraattori<br>Text-to-SQL<br>Insight-narratiivi<br>Proaktiivinen analyysi</div>
+        <div class="card-tags"><span class="tag tag-dark">Suomi</span><span class="tag tag-dark">MCP + A2A</span></div>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚙️</div>
+        <div class="card-title">MCP Tool Layer</div>
+        <div class="card-sub">get_sales · get_availability<br>get_reclamations<br>get_forecast · get_benchmark<br>get_customer_insight<br>send_alert</div>
+        <div class="card-tags"><span class="tag tag-dark">7 työkalua</span></div>
+      </div>
+      <div class="card">
+        <div class="card-icon">💾</div>
+        <div class="card-title">Muisti &amp; profiilit</div>
+        <div class="card-sub">DynamoDB<br>Hälytysehdot<br>Toimittajaprofiili<br>Agenttihistoria</div>
+        <div class="card-tags"><span class="tag tag-dark">Per toimittaja</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Arrow -->
+  <div class="arrow">
+    <div class="arrow-line"><div class="shaft"></div><div class="head"></div></div>
+    <div class="arrow-label">Snowflake Polaris REST · OData · Kafka Consumer</div>
+    <div class="arrow-line"><div class="shaft"></div><div class="head"></div></div>
+  </div>
+
+  <!-- 6. BACKEND -->
+  <div class="layer l8">
+    <div class="layer-label">⑥ S-ryhmä — Olemassa olevat taustajärjestelmät</div>
+    <div class="layer-cards">
+      <div class="card">
+        <div class="card-icon">❄️</div>
+        <div class="card-title">Snowflake / S-Data</div>
+        <div class="card-sub">Polaris REST API<br>Myynti · Saatavuus<br>Hävikki · Ennuste<br>Asiakasymmärrys<br>Kategoriabenchmark</div>
+        <div class="card-tags"><span class="tag tag-navy">Secure Views</span></div>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚡</div>
+        <div class="card-title">Confluent Kafka</div>
+        <div class="card-sub">Managed Kafka<br>Event streaming<br>Kassatapahtumat<br>Saatavuusmuutokset</div>
+        <div class="card-tags"><span class="tag tag-navy">Real-time events</span></div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔷</div>
+        <div class="card-title">SAP BTP</div>
+        <div class="card-sub">Kassadata<br>OData API<br>Laskutusdata</div>
+        <div class="card-tags"><span class="tag tag-navy">OData</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
 
   <!-- 1. TOIMITTAJAT -->
   <div class="layer l1">
@@ -429,12 +735,14 @@
 
 <!-- Legend -->
 <div class="legend">
-  <div class="legend-item"><div class="legend-dot" style="background:#90cdf4"></div>Toimittajarajapinta</div>
-  <div class="legend-item"><div class="legend-dot" style="background:#9ae6b4"></div>Käyttöliittymäkanavat</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#90cdf4"></div>Toimittajat</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#b794f4"></div>Enterprise / Kehittäjä</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#9ae6b4"></div>UI-kanavat</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#81e6d9"></div>MCP / A2A protokollat</div>
   <div class="legend-item"><div class="legend-dot" style="background:#fbd38d"></div>Tunnistautuminen & tietoturva</div>
-  <div class="legend-item"><div class="legend-dot" style="background:#d6bcfa"></div>REST API — kyselypohjaiset</div>
-  <div class="legend-item"><div class="legend-dot" style="background:#feb2b2"></div>Streaming — reaaliaikaiset</div>
-  <div class="legend-item"><div class="legend-dot" style="background:#4a5568"></div>AI-ydin (Bedrock + MCP)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#d6bcfa"></div>REST API</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#feb2b2"></div>Streaming API</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#4a5568"></div>AI-ydin (Bedrock + MCP + A2A)</div>
   <div class="legend-item"><div class="legend-dot" style="background:#2b6cb0"></div>S-ryhmä taustajärjestelmät</div>
 </div>
 
