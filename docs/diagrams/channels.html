@@ -1,175 +1,333 @@
 <!DOCTYPE html>
 <html lang="fi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Kanavat — Pientuottajat AI</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pientuottajat AI — Kanavat</title>
   <style>
-    body { background: #f8fafc; font-family: 'Segoe UI', sans-serif; }
-    .card { transition: transform 0.2s, box-shadow 0.2s; }
-    .card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.13); }
-    .badge { display: inline-block; font-size: 11px; padding: 2px 10px; border-radius: 99px; font-weight: 600; }
-    .arrow { color: #94a3b8; font-size: 2rem; line-height: 1; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      padding: 32px 24px 48px;
+      color: #1a202c;
+    }
+    .page-title { text-align: center; margin-bottom: 8px; }
+    .page-title h1 { font-size: 22px; font-weight: 700; color: #1a202c; letter-spacing: -0.5px; }
+    .page-title p { font-size: 13px; color: #718096; margin-top: 4px; }
+
+    .arch { max-width: 1100px; margin: 24px auto 0; display: flex; flex-direction: column; gap: 0; }
+
+    .layer { position: relative; border-radius: 16px; padding: 18px 20px 16px; margin-bottom: 4px; }
+    .layer-label { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 12px; opacity: 0.7; }
+    .layer-cards { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+
+    .arrow { display: flex; justify-content: center; align-items: center; height: 28px; gap: 40px; }
+    .arrow-line { display: flex; flex-direction: column; align-items: center; }
+    .arrow-line .shaft { width: 2px; height: 14px; background: #a0aec0; }
+    .arrow-line .head { width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid #a0aec0; }
+    .arrow-label { font-size: 10px; color: #718096; background: #f0f4f8; padding: 1px 8px; border-radius: 99px; border: 1px solid #e2e8f0; white-space: nowrap; }
+
+    .card { background: white; border-radius: 12px; padding: 12px 14px; min-width: 140px; max-width: 210px; flex: 1; box-shadow: 0 1px 4px rgba(0,0,0,0.07); border: 1.5px solid rgba(0,0,0,0.05); }
+    .card-icon { font-size: 22px; margin-bottom: 4px; }
+    .card-title { font-size: 13px; font-weight: 700; line-height: 1.3; }
+    .card-sub { font-size: 11px; color: #718096; margin-top: 3px; line-height: 1.4; }
+    .card-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+    .tag { font-size: 10px; padding: 2px 7px; border-radius: 99px; font-weight: 600; }
+
+    /* Channel layer — green */
+    .l-ch { background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%); border: 2px solid #9ae6b4; }
+    .l-ch .layer-label { color: #276749; }
+    .l-ch .card { border-color: #c6f6d5; }
+    .l-ch .card-title { color: #276749; }
+    .tag-green { background: #f0fff4; color: #276749; }
+
+    /* Auth layer — orange */
+    .l-auth { background: linear-gradient(135deg, #fffaf0 0%, #feebc8 100%); border: 2px solid #fbd38d; }
+    .l-auth .layer-label { color: #c05621; }
+    .l-auth .card { border-color: #feebc8; }
+    .l-auth .card-title { color: #c05621; }
+    .tag-orange { background: #fffaf0; color: #c05621; }
+
+    /* API layer — purple */
+    .l-api { background: linear-gradient(135deg, #faf5ff 0%, #e9d8fd 100%); border: 2px solid #d6bcfa; }
+    .l-api .layer-label { color: #553c9a; }
+    .l-api .card { border-color: #e9d8fd; }
+    .l-api .card-title { color: #553c9a; }
+    .tag-purple { background: #faf5ff; color: #553c9a; }
+
+    /* AI Core — dark */
+    .l-ai { background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%); border: 2px solid #4a5568; }
+    .l-ai .layer-label { color: #a0aec0; }
+    .l-ai .card { background: #2d3748; border-color: #4a5568; }
+    .l-ai .card-title { color: #f7fafc; }
+    .l-ai .card-sub { color: #a0aec0; }
+    .tag-dark { background: #4a5568; color: #e2e8f0; }
+
+    /* Backend — navy */
+    .l-be { background: linear-gradient(135deg, #1a365d 0%, #2a4a7f 100%); border: 2px solid #2c5282; }
+    .l-be .layer-label { color: #90cdf4; }
+    .l-be .card { background: #2c5282; border-color: #3182ce; }
+    .l-be .card-title { color: #ebf8ff; }
+    .l-be .card-sub { color: #90cdf4; }
+    .tag-navy { background: #2b6cb0; color: #ebf8ff; }
+
+    /* four-col row */
+    .api-row { display: flex; gap: 8px; margin-bottom: 4px; }
+    .api-row .layer { flex: 1; margin-bottom: 0; }
+    .tag-red { background: #fff5f5; color: #9b2c2c; }
+    .l-stream { background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%); border: 2px solid #feb2b2; }
+    .l-stream .layer-label { color: #9b2c2c; }
+    .l-stream .card { border-color: #fed7d7; }
+    .l-stream .card-title { color: #9b2c2c; }
+    .tag-teal { background: #e6fffa; color: #234e52; }
+    .l-mcp { background: linear-gradient(135deg, #e6fffa 0%, #b2f5ea 100%); border: 2px solid #81e6d9; }
+    .l-mcp .layer-label { color: #234e52; }
+    .l-mcp .card { border-color: #b2f5ea; }
+    .l-mcp .card-title { color: #234e52; }
+    .tag-violet { background: #f0e6ff; color: #44337a; }
+    .l-a2a { background: linear-gradient(135deg, #f0e6ff 0%, #d9b8ff 100%); border: 2px solid #b794f4; }
+    .l-a2a .layer-label { color: #44337a; }
+    .l-a2a .card { border-color: #d9b8ff; }
+    .l-a2a .card-title { color: #44337a; }
+
+    footer { max-width: 1100px; margin: 28px auto 0; text-align: center; font-size: 11px; color: #a0aec0; }
+    footer a { color: #48bb78; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
   </style>
 </head>
-<body class="min-h-screen py-10 px-4">
+<body>
 
-  <!-- Header -->
-  <div class="max-w-6xl mx-auto mb-10 text-center">
-    <div class="inline-block bg-green-600 text-white text-xs font-bold px-4 py-1 rounded-full mb-3 tracking-widest uppercase">Pientuottajat AI</div>
-    <h1 class="text-4xl font-bold text-gray-900 mb-2">Kanavat ja käyttäjät</h1>
-    <p class="text-gray-500 text-lg max-w-2xl mx-auto">Kuusi rinnakkaista tapaa ottaa yhteyttä AI-agenttiin — jokaiselle toimittajalle sopiva reitti</p>
-  </div>
+<div class="page-title">
+  <h1>Pientuottajat AI — Kanavat</h1>
+  <p>Kuusi rinnakkaista tapaa — yksi AI-ydin · AWS eu-west-1 · Luottamuksellinen</p>
+</div>
 
-  <!-- Channel cards -->
-  <div class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-14">
+<div class="arch">
 
-    <!-- WhatsApp -->
-    <div class="card bg-white rounded-3xl p-7 shadow-md border-t-4 border-green-500">
-      <div class="text-4xl mb-3">📱</div>
-      <div class="flex items-center gap-2 mb-1">
-        <h2 class="text-xl font-bold text-gray-900">WhatsApp</h2>
-        <span class="badge bg-green-100 text-green-700">Pääkanava</span>
+  <!-- LAYER 1: CHANNELS -->
+  <div class="layer l-ch">
+    <div class="layer-label">① Kanavat — toimittaja valitsee mieluisimman</div>
+    <div class="layer-cards">
+      <div class="card">
+        <div class="card-icon">📱</div>
+        <div class="card-title">WhatsApp</div>
+        <div class="card-sub">Meta Business API</div>
+        <div class="card-tags">
+          <span class="tag tag-green">Pääkanava</span>
+          <span class="tag tag-green">Chat</span>
+        </div>
       </div>
-      <p class="text-gray-500 text-sm mb-4">Meta Business API — tuttu sovellus, ei asennusta</p>
-      <div class="space-y-2 text-sm">
-        <div class="flex gap-2"><span class="text-green-500 font-bold">→</span><span>Toimituspoikkeama-ilmoitukset</span></div>
-        <div class="flex gap-2"><span class="text-green-500 font-bold">→</span><span>Myyntiraportti kerran kuussa</span></div>
-        <div class="flex gap-2"><span class="text-green-500 font-bold">→</span><span>Reklamaatiopyynnöt</span></div>
-        <div class="flex gap-2"><span class="text-green-500 font-bold">→</span><span>Hyllysaatavuushälytykset</span></div>
+      <div class="card">
+        <div class="card-icon">✈️</div>
+        <div class="card-title">Telegram</div>
+        <div class="card-sub">Bot API · Varakanava</div>
+        <div class="card-tags">
+          <span class="tag tag-green">Chat</span>
+          <span class="tag tag-green">Ryhmät</span>
+        </div>
       </div>
-      <div class="mt-5 pt-4 border-t border-gray-100">
-        <div class="text-xs text-gray-400 font-semibold uppercase mb-1">Kohderyhmä</div>
-        <p class="text-sm text-gray-700">Kaikki toimittajat — erityisesti pienet, ei-tekniset</p>
+      <div class="card">
+        <div class="card-icon">🌐</div>
+        <div class="card-title">Web-portaali</div>
+        <div class="card-sub">Next.js · S3 + CloudFront</div>
+        <div class="card-tags">
+          <span class="tag tag-green">Itsepalvelu</span>
+          <span class="tag tag-green">Hallinta</span>
+        </div>
       </div>
-    </div>
-
-    <!-- Telegram -->
-    <div class="card bg-white rounded-3xl p-7 shadow-md border-t-4 border-blue-400">
-      <div class="text-4xl mb-3">✈️</div>
-      <div class="flex items-center gap-2 mb-1">
-        <h2 class="text-xl font-bold text-gray-900">Telegram</h2>
-        <span class="badge bg-blue-100 text-blue-700">Varakanava</span>
+      <div class="card">
+        <div class="card-icon">📊</div>
+        <div class="card-title">Analytiikka</div>
+        <div class="card-sub">Apache Superset · Snowflake</div>
+        <div class="card-tags">
+          <span class="tag tag-green">Raportit</span>
+          <span class="tag tag-green">Dashboards</span>
+        </div>
       </div>
-      <p class="text-gray-500 text-sm mb-4">Bot API — nopea käyttöönotto, ryhmäkanavat</p>
-      <div class="space-y-2 text-sm">
-        <div class="flex gap-2"><span class="text-blue-400 font-bold">→</span><span>Samat toiminnot kuin WhatsApp</span></div>
-        <div class="flex gap-2"><span class="text-blue-400 font-bold">→</span><span>Ryhmähälytykset usealle henkilölle</span></div>
-        <div class="flex gap-2"><span class="text-blue-400 font-bold">→</span><span>Automaattiviestit ja bottikomennot</span></div>
+      <div class="card">
+        <div class="card-icon">🤖</div>
+        <div class="card-title">MCP Access</div>
+        <div class="card-sub">Model Context Protocol</div>
+        <div class="card-tags">
+          <span class="tag tag-green">AI-clientit</span>
+          <span class="tag tag-green">Kehittäjät</span>
+        </div>
       </div>
-      <div class="mt-5 pt-4 border-t border-gray-100">
-        <div class="text-xs text-gray-400 font-semibold uppercase mb-1">Kohderyhmä</div>
-        <p class="text-sm text-gray-700">Toimittajat jotka eivät käytä WhatsAppia; kehittäjät</p>
+      <div class="card">
+        <div class="card-icon">⚡</div>
+        <div class="card-title">A2A Access</div>
+        <div class="card-sub">Agent-to-Agent Gateway</div>
+        <div class="card-tags">
+          <span class="tag tag-green">ERP</span>
+          <span class="tag tag-green">Automaatio</span>
+        </div>
       </div>
-    </div>
-
-    <!-- Web-portaali -->
-    <div class="card bg-white rounded-3xl p-7 shadow-md border-t-4 border-indigo-500">
-      <div class="text-4xl mb-3">🌐</div>
-      <div class="flex items-center gap-2 mb-1">
-        <h2 class="text-xl font-bold text-gray-900">Web-portaali</h2>
-        <span class="badge bg-indigo-100 text-indigo-700">Itsepalvelu</span>
-      </div>
-      <p class="text-gray-500 text-sm mb-4">Next.js · Cognito SSO — selain, ei asennusta</p>
-      <div class="space-y-2 text-sm">
-        <div class="flex gap-2"><span class="text-indigo-500 font-bold">→</span><span>Toimitusten hallintanäkymä</span></div>
-        <div class="flex gap-2"><span class="text-indigo-500 font-bold">→</span><span>Laskujen seuranta</span></div>
-        <div class="flex gap-2"><span class="text-indigo-500 font-bold">→</span><span>Reklamaatiohistoria</span></div>
-        <div class="flex gap-2"><span class="text-indigo-500 font-bold">→</span><span>AI-chat selaimessa</span></div>
-      </div>
-      <div class="mt-5 pt-4 border-t border-gray-100">
-        <div class="text-xs text-gray-400 font-semibold uppercase mb-1">Kohderyhmä</div>
-        <p class="text-sm text-gray-700">Toimittajat joilla tietokone käytössä; koko henkilöstö</p>
-      </div>
-    </div>
-
-    <!-- Superset / Analytiikka -->
-    <div class="card bg-white rounded-3xl p-7 shadow-md border-t-4 border-orange-400">
-      <div class="text-4xl mb-3">📊</div>
-      <div class="flex items-center gap-2 mb-1">
-        <h2 class="text-xl font-bold text-gray-900">Analytiikka</h2>
-        <span class="badge bg-orange-100 text-orange-700">Raportit</span>
-      </div>
-      <p class="text-gray-500 text-sm mb-4">Apache Superset · Snowflake — valmiit raporttipohjat</p>
-      <div class="space-y-2 text-sm">
-        <div class="flex gap-2"><span class="text-orange-400 font-bold">→</span><span>Myynti- ja menekkiraportit</span></div>
-        <div class="flex gap-2"><span class="text-orange-400 font-bold">→</span><span>OSA-seuranta ja hyllysaatavuus</span></div>
-        <div class="flex gap-2"><span class="text-orange-400 font-bold">→</span><span>Ennusteet ja benchmarkit</span></div>
-        <div class="flex gap-2"><span class="text-orange-400 font-bold">→</span><span>Omat raportit ja tallennukset</span></div>
-      </div>
-      <div class="mt-5 pt-4 border-t border-gray-100">
-        <div class="text-xs text-gray-400 font-semibold uppercase mb-1">Kohderyhmä</div>
-        <p class="text-sm text-gray-700">Toimittajat joilla analytiikkatarve; johto ja myynti</p>
-      </div>
-    </div>
-
-    <!-- MCP -->
-    <div class="card bg-white rounded-3xl p-7 shadow-md border-t-4 border-teal-500">
-      <div class="text-4xl mb-3">🤖</div>
-      <div class="flex items-center gap-2 mb-1">
-        <h2 class="text-xl font-bold text-gray-900">MCP Access</h2>
-        <span class="badge bg-teal-100 text-teal-700">AI-työkalut</span>
-      </div>
-      <p class="text-gray-500 text-sm mb-4">Model Context Protocol — ulkoiset AI-clientit käyttävät suoraan</p>
-      <div class="space-y-2 text-sm">
-        <div class="flex gap-2"><span class="text-teal-500 font-bold">→</span><span>Claude / GPT-asiakassovellukset</span></div>
-        <div class="flex gap-2"><span class="text-teal-500 font-bold">→</span><span>Omat AI-työnkulut ja automatisointi</span></div>
-        <div class="flex gap-2"><span class="text-teal-500 font-bold">→</span><span>Suora tool-kutsu: get_sales, get_deliveries</span></div>
-        <div class="flex gap-2"><span class="text-teal-500 font-bold">→</span><span>API-avain + OAuth2</span></div>
-      </div>
-      <div class="mt-5 pt-4 border-t border-gray-100">
-        <div class="text-xs text-gray-400 font-semibold uppercase mb-1">Kohderyhmä</div>
-        <p class="text-sm text-gray-700">Tekniset toimittajat, kehittäjät, data-analyytikot</p>
-      </div>
-    </div>
-
-    <!-- A2A -->
-    <div class="card bg-white rounded-3xl p-7 shadow-md border-t-4 border-purple-500">
-      <div class="text-4xl mb-3">⚡</div>
-      <div class="flex items-center gap-2 mb-1">
-        <h2 class="text-xl font-bold text-gray-900">A2A Access</h2>
-        <span class="badge bg-purple-100 text-purple-700">Agentti→Agentti</span>
-      </div>
-      <p class="text-gray-500 text-sm mb-4">Agent-to-Agent Gateway — koneelta koneelle ilman ihmistä</p>
-      <div class="space-y-2 text-sm">
-        <div class="flex gap-2"><span class="text-purple-500 font-bold">→</span><span>ERP-järjestelmien automaatio</span></div>
-        <div class="flex gap-2"><span class="text-purple-500 font-bold">→</span><span>Toimittajan oma AI-agentti kutsuu</span></div>
-        <div class="flex gap-2"><span class="text-purple-500 font-bold">→</span><span>Reaaliaikaiset tilauskyselyt</span></div>
-        <div class="flex gap-2"><span class="text-purple-500 font-bold">→</span><span>Webhook-pohjaiset tapahtumat</span></div>
-      </div>
-      <div class="mt-5 pt-4 border-t border-gray-100">
-        <div class="text-xs text-gray-400 font-semibold uppercase mb-1">Kohderyhmä</div>
-        <p class="text-sm text-gray-700">Suuret toimittajat, yritysasiakkaat, integraatiot</p>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- Bottom flow -->
-  <div class="max-w-4xl mx-auto mb-14">
-    <div class="bg-white rounded-3xl shadow-md p-8">
-      <h3 class="text-lg font-bold text-gray-800 mb-6 text-center">Kaikki kanavat — yksi AI-ydin</h3>
-      <div class="flex flex-wrap items-center justify-center gap-3 text-sm">
-        <div class="bg-green-100 text-green-800 rounded-xl px-4 py-2 font-semibold">📱 WhatsApp</div>
-        <div class="bg-blue-100 text-blue-800 rounded-xl px-4 py-2 font-semibold">✈️ Telegram</div>
-        <div class="bg-indigo-100 text-indigo-800 rounded-xl px-4 py-2 font-semibold">🌐 Web</div>
-        <div class="bg-orange-100 text-orange-800 rounded-xl px-4 py-2 font-semibold">📊 Analytiikka</div>
-        <div class="bg-teal-100 text-teal-800 rounded-xl px-4 py-2 font-semibold">🤖 MCP</div>
-        <div class="bg-purple-100 text-purple-800 rounded-xl px-4 py-2 font-semibold">⚡ A2A</div>
-        <div class="arrow px-2">→</div>
-        <div class="bg-gray-900 text-white rounded-xl px-5 py-2 font-bold">🧠 Bedrock Agent</div>
-        <div class="arrow px-2">→</div>
-        <div class="bg-blue-900 text-blue-100 rounded-xl px-4 py-2 font-semibold">❄️ S-ryhmä Data</div>
-      </div>
-      <p class="text-center text-gray-400 text-xs mt-5">Cognito SSO · AWS API Gateway · Lambda · Snowflake · Confluent Kafka · SAP BTP</p>
     </div>
   </div>
 
-  <!-- Footer -->
-  <div class="bg-gray-900 text-gray-400 text-center py-6 text-xs">
-    <p>Pientuottajat AI · <a href="https://github.com/sivonsam/pientuottajat_AI" class="text-green-400 hover:underline">GitHub</a> · AWS eu-west-1 · Luottamuksellinen</p>
+  <!-- Arrow -->
+  <div class="arrow">
+    <div class="arrow-line"><div class="shaft"></div><div class="head"></div></div>
+    <span class="arrow-label">Cognito SSO · OAuth2 / API-avain</span>
+    <div class="arrow-line"><div class="shaft"></div><div class="head"></div></div>
   </div>
+
+  <!-- LAYER 2: AUTH -->
+  <div class="layer l-auth">
+    <div class="layer-label">② Tunnistautuminen</div>
+    <div class="layer-cards">
+      <div class="card">
+        <div class="card-icon">🔐</div>
+        <div class="card-title">Amazon Cognito</div>
+        <div class="card-sub">SSO · OIDC · MFA</div>
+        <div class="card-tags"><span class="tag tag-orange">Kaikki kanavat</span></div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🗝️</div>
+        <div class="card-title">API-avaimet</div>
+        <div class="card-sub">MCP · A2A · Webhook</div>
+        <div class="card-tags"><span class="tag tag-orange">Konekäyttö</span></div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🛡️</div>
+        <div class="card-title">Row-Level Security</div>
+        <div class="card-sub">Toimittaja näkee vain omat tiedot</div>
+        <div class="card-tags"><span class="tag tag-orange">Multi-tenant</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Arrow -->
+  <div class="arrow">
+    <div class="arrow-line"><div class="shaft"></div><div class="head"></div></div>
+    <span class="arrow-label">Validoitu pyyntö</span>
+    <div class="arrow-line"><div class="shaft"></div><div class="head"></div></div>
+  </div>
+
+  <!-- LAYER 3: 4 API PROTOCOLS -->
+  <div class="api-row">
+    <div class="layer l-api">
+      <div class="layer-label">③ REST API</div>
+      <div class="layer-cards" style="justify-content:flex-start;">
+        <div class="card" style="max-width:100%">
+          <div class="card-icon">🔄</div>
+          <div class="card-title">API Gateway REST</div>
+          <div class="card-sub">GET/POST kyselyt<br>Myynti, toimitukset, laskut</div>
+          <div class="card-tags"><span class="tag tag-purple">Synkroninen</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="layer l-stream">
+      <div class="layer-label">③ Streaming API</div>
+      <div class="layer-cards" style="justify-content:flex-start;">
+        <div class="card" style="max-width:100%">
+          <div class="card-icon">📡</div>
+          <div class="card-title">WebSocket / Kafka</div>
+          <div class="card-sub">Reaaliaikahälytykset<br>Hyllysaatavuus live</div>
+          <div class="card-tags"><span class="tag tag-red">Reaaliaikainen</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="layer l-mcp">
+      <div class="layer-label">③ MCP Server</div>
+      <div class="layer-cards" style="justify-content:flex-start;">
+        <div class="card" style="max-width:100%">
+          <div class="card-icon">🧩</div>
+          <div class="card-title">MCP Tool Layer</div>
+          <div class="card-sub">get_sales · get_deliveries<br>get_forecast · send_alert</div>
+          <div class="card-tags"><span class="tag tag-teal">AI-työkalut</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="layer l-a2a">
+      <div class="layer-label">③ A2A Gateway</div>
+      <div class="layer-cards" style="justify-content:flex-start;">
+        <div class="card" style="max-width:100%">
+          <div class="card-icon">🔗</div>
+          <div class="card-title">Agent-to-Agent</div>
+          <div class="card-sub">ERP-integraatiot<br>Automaattiset kyselyt</div>
+          <div class="card-tags"><span class="tag tag-violet">Kone→Kone</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Arrow -->
+  <div class="arrow">
+    <div class="arrow-line"><div class="shaft"></div><div class="head"></div></div>
+    <span class="arrow-label">Orkestroi · Päättelee · Vastaa suomeksi</span>
+    <div class="arrow-line"><div class="shaft"></div><div class="head"></div></div>
+  </div>
+
+  <!-- LAYER 4: AI CORE -->
+  <div class="layer l-ai">
+    <div class="layer-label">④ AI-ydin</div>
+    <div class="layer-cards">
+      <div class="card">
+        <div class="card-icon">🧠</div>
+        <div class="card-title">AWS Bedrock Agent</div>
+        <div class="card-sub">Amazon Nova Lite/Pro<br>NLU · Orkestrointi · Muisti</div>
+        <div class="card-tags"><span class="tag tag-dark">Generatiivinen AI</span></div>
+      </div>
+      <div class="card">
+        <div class="card-icon">⏰</div>
+        <div class="card-title">Proaktiivisuus</div>
+        <div class="card-sub">EventBridge · Lambda<br>Ajastetut hälytykset</div>
+        <div class="card-tags"><span class="tag tag-dark">Push-viestit</span></div>
+      </div>
+      <div class="card">
+        <div class="card-icon">💾</div>
+        <div class="card-title">Muisti</div>
+        <div class="card-sub">DynamoDB · S3<br>Toimittajakohtainen konteksti</div>
+        <div class="card-tags"><span class="tag tag-dark">Sessio + historia</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Arrow -->
+  <div class="arrow">
+    <div class="arrow-line"><div class="shaft"></div><div class="head"></div></div>
+    <span class="arrow-label">Snowflake · Kafka · SAP BTP · S-Data</span>
+    <div class="arrow-line"><div class="shaft"></div><div class="head"></div></div>
+  </div>
+
+  <!-- LAYER 5: BACKENDS -->
+  <div class="layer l-be">
+    <div class="layer-label">⑤ S-ryhmän taustajärjestelmät</div>
+    <div class="layer-cards">
+      <div class="card">
+        <div class="card-icon">❄️</div>
+        <div class="card-title">Snowflake / S-Data</div>
+        <div class="card-sub">Myynti · Menekki · Ennuste · Hylly</div>
+        <div class="card-tags"><span class="tag tag-navy">Data warehouse</span></div>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚡</div>
+        <div class="card-title">Confluent Kafka</div>
+        <div class="card-sub">Event streaming<br>Reaaliaikaiset tapahtumat</div>
+        <div class="card-tags"><span class="tag tag-navy">Event-driven</span></div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔷</div>
+        <div class="card-title">SAP BTP</div>
+        <div class="card-sub">Kassadata · Tilaukset</div>
+        <div class="card-tags"><span class="tag tag-navy">ERP</span></div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🏪</div>
+        <div class="card-title">Alueosuuskaupat</div>
+        <div class="card-sub">Toimialakohtaiset järjestelmät</div>
+        <div class="card-tags"><span class="tag tag-navy">Legacy</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>Pientuottajat AI · <a href="https://github.com/sivonsam/pientuottajat_AI">GitHub</a> · AWS eu-west-1 · Luottamuksellinen</p>
+</footer>
 
 </body>
 </html>
