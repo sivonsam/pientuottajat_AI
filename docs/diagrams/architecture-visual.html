@@ -254,115 +254,88 @@
 
 <div class="arch">
 
-  <!-- TOP ROW: Toimittajat + Enterprise -->
-  <div class="top-row">
-
-    <!-- 1a. TOIMITTAJAT -->
-    <div class="layer l1" style="flex:2">
-      <div class="layer-label">① Toimittajat</div>
-      <div class="layer-cards">
-        <div class="card">
-          <div class="card-icon">🌱</div>
-          <div class="card-title">Tosipieni</div>
-          <div class="card-sub">Maatila · käsityöläinen<br>Ei ERP</div>
-          <div class="card-tags"><span class="tag tag-blue">WhatsApp</span></div>
-        </div>
-        <div class="card">
-          <div class="card-icon">🏭</div>
-          <div class="card-title">Pieni</div>
-          <div class="card-sub">1–5 hlö · elintarvike<br>Netvisor / Procountor</div>
-          <div class="card-tags"><span class="tag tag-blue">WhatsApp</span><span class="tag tag-blue">Web</span></div>
-        </div>
-        <div class="card">
-          <div class="card-icon">🏢</div>
-          <div class="card-title">Keskisuuri</div>
-          <div class="card-sub">5–50 hlö · jalostaja<br>Lemonsoft / Maestro</div>
-          <div class="card-tags"><span class="tag tag-blue">WhatsApp</span><span class="tag tag-blue">Web</span><span class="tag tag-blue">API</span></div>
-        </div>
+  <!-- TOP ROW: Toimittajat + Enterprise in ONE layer -->
+  <div class="layer l1">
+    <div class="layer-label">① Käyttäjät — kuka ottaa yhteyden</div>
+    <div class="layer-cards">
+      <div class="card">
+        <div class="card-icon">🌱</div>
+        <div class="card-title">Tosipieni</div>
+        <div class="card-sub">Maatila · käsityöläinen<br>Ei ERP</div>
+        <div class="card-tags"><span class="tag tag-blue">WhatsApp</span></div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🏭</div>
+        <div class="card-title">Pieni</div>
+        <div class="card-sub">1–5 hlö · elintarvike<br>Netvisor / Procountor</div>
+        <div class="card-tags"><span class="tag tag-blue">WhatsApp</span><span class="tag tag-blue">Web</span></div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🏢</div>
+        <div class="card-title">Keskisuuri</div>
+        <div class="card-sub">5–50 hlö · jalostaja<br>Lemonsoft / Maestro</div>
+        <div class="card-tags"><span class="tag tag-blue">Web</span><span class="tag tag-blue">API</span></div>
+      </div>
+      <div class="card" style="border-color:#d9b8ff">
+        <div class="card-icon">🏪</div>
+        <div class="card-title">S-ryhmä IT</div>
+        <div class="card-sub">Sisäiset AI-agentit<br>BI-työkalut</div>
+        <div class="card-tags"><span class="tag tag-violet">MCP · A2A</span></div>
+      </div>
+      <div class="card" style="border-color:#d9b8ff">
+        <div class="card-icon">🤝</div>
+        <div class="card-title">Kumppani / ISV</div>
+        <div class="card-sub">Kaupan liitto<br>ERP-toimittajat</div>
+        <div class="card-tags"><span class="tag tag-violet">MCP · A2A</span></div>
       </div>
     </div>
-
-    <!-- 1b. ENTERPRISE / DEVELOPER -->
-    <div class="layer l-ent" style="flex:1">
-      <div class="layer-label">① Enterprise &amp; Kehittäjä</div>
-      <div class="layer-cards">
-        <div class="card">
-          <div class="card-icon">🏪</div>
-          <div class="card-title">S-ryhmä IT</div>
-          <div class="card-sub">Sisäiset järjestelmät<br>Omat AI-agentit<br>BI-työkalut</div>
-          <div class="card-tags"><span class="tag tag-violet">A2A</span><span class="tag tag-violet">MCP</span></div>
-        </div>
-        <div class="card">
-          <div class="card-icon">🤝</div>
-          <div class="card-title">Kumppani / ISV</div>
-          <div class="card-sub">Kaupan liitto<br>ERP-toimittajat<br>Analytiikkakumppanit</div>
-          <div class="card-tags"><span class="tag tag-violet">MCP Client</span></div>
-        </div>
-      </div>
-    </div>
-
   </div>
 
   <!-- Arrow -->
   <div class="arrow">
     <div class="arrow-line"><div class="shaft"></div><div class="head"></div></div>
-    <div class="arrow-label">toimittaja valitsee kanavan · yritysasiakas valitsee protokollan</div>
+    <div class="arrow-label">valitsee kanavan tai protokollan</div>
     <div class="arrow-line"><div class="shaft"></div><div class="head"></div></div>
   </div>
 
-  <!-- 2. KANAVAT + INTEGRAATIOPROTOKOLLAT -->
-  <div class="top-row">
-
-    <!-- 2a. UI-kanavat -->
-    <div class="layer l2" style="flex:2">
-      <div class="layer-label">② UI-kanavat — toimittajille</div>
-      <div class="layer-cards">
-        <div class="card">
-          <div class="card-icon">📱</div>
-          <div class="card-title">WhatsApp</div>
-          <div class="card-sub">Business API · Meta</div>
-          <div class="card-tags"></div>
-        </div>
-        <div class="card">
-          <div class="card-icon">📱</div>
-          <div class="card-title">Telegram</div>
-          <div class="card-sub">Bot API</div>
-          <div class="card-tags"></div>
-        </div>
-        <div class="card">
-          <div class="card-icon">🌐</div>
-          <div class="card-title">Web-portaali</div>
-          <div class="card-sub">Next.js · S3 · CloudFront</div>
-          <div class="card-tags"><span class="tag tag-green">Selain</span></div>
-        </div>
-        <div class="card">
-          <div class="card-icon">📊</div>
-          <div class="card-title">Analytiikkaportaali</div>
-          <div class="card-sub">Apache Superset<br>Myynti · Saatavuus<br>Hävikki · Benchmark</div>
-          <div class="card-tags"><span class="tag tag-green">Apache 2.0</span></div>
-        </div>
+  <!-- 2. ALL CHANNELS IN ONE ROW -->
+  <div class="layer l2">
+    <div class="layer-label">② Kanavat &amp; Integraatioprotokollat — kaikki rinnakkain</div>
+    <div class="layer-cards">
+      <div class="card">
+        <div class="card-icon">📱</div>
+        <div class="card-title">WhatsApp</div>
+        <div class="card-sub">Business API<br>Meta</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">📱</div>
+        <div class="card-title">Telegram</div>
+        <div class="card-sub">Bot API</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🌐</div>
+        <div class="card-title">Web-portaali</div>
+        <div class="card-sub">Next.js<br>S3 + CloudFront</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">📊</div>
+        <div class="card-title">Analytiikka</div>
+        <div class="card-sub">Apache Superset<br>Myynti · Hävikki<br>Benchmark</div>
+        <div class="card-tags"><span class="tag tag-green">Apache 2.0</span></div>
+      </div>
+      <div class="card" style="border-color:#81e6d9; background:#f0fffe">
+        <div class="card-icon">⚙️</div>
+        <div class="card-title" style="color:#234e52">MCP Access</div>
+        <div class="card-sub">Model Context Protocol<br>Claude · Cursor<br>Custom AI tools</div>
+        <div class="card-tags"><span class="tag tag-teal">Anthropic std</span></div>
+      </div>
+      <div class="card" style="border-color:#b794f4; background:#faf5ff">
+        <div class="card-icon">🔗</div>
+        <div class="card-title" style="color:#44337a">A2A Access</div>
+        <div class="card-sub">Agent-to-Agent<br>Enterprise AI agentit<br>Bedrock ↔ Bedrock</div>
+        <div class="card-tags"><span class="tag tag-violet">Open std</span></div>
       </div>
     </div>
-
-    <!-- 2b. Integraatioprotokollat -->
-    <div class="layer l-mcp" style="flex:1">
-      <div class="layer-label">② Integraatioprotokollat — koneille</div>
-      <div class="layer-cards">
-        <div class="card">
-          <div class="card-icon">⚙️</div>
-          <div class="card-title">MCP Client</div>
-          <div class="card-sub">Model Context Protocol<br>Claude Desktop · Cursor<br>Custom AI assistants</div>
-          <div class="card-tags"><span class="tag tag-teal">Anthropic std</span></div>
-        </div>
-        <div class="card">
-          <div class="card-icon">🔗</div>
-          <div class="card-title">A2A Client</div>
-          <div class="card-sub">Agent-to-Agent<br>Enterprise AI agentit<br>Bedrock ↔ Bedrock</div>
-          <div class="card-tags"><span class="tag tag-teal">Google / open std</span></div>
-        </div>
-      </div>
-    </div>
-
   </div>
 
   <!-- Arrow -->
