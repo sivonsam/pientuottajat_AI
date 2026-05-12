@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kanavat — Pientuottajat AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background: #f8fafc; font-family: 'Segoe UI', sans-serif; }
+    .card { transition: transform 0.2s, box-shadow 0.2s; }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.13); }
+    .badge { display: inline-block; font-size: 11px; padding: 2px 10px; border-radius: 99px; font-weight: 600; }
+    .arrow { color: #94a3b8; font-size: 2rem; line-height: 1; }
+  </style>
+</head>
+<body class="min-h-screen py-10 px-4">
+
+  <!-- Header -->
+  <div class="max-w-6xl mx-auto mb-10 text-center">
+    <div class="inline-block bg-green-600 text-white text-xs font-bold px-4 py-1 rounded-full mb-3 tracking-widest uppercase">Pientuottajat AI</div>
+    <h1 class="text-4xl font-bold text-gray-900 mb-2">Kanavat ja käyttäjät</h1>
+    <p class="text-gray-500 text-lg max-w-2xl mx-auto">Kuusi rinnakkaista tapaa ottaa yhteyttä AI-agenttiin — jokaiselle toimittajalle sopiva reitti</p>
+  </div>
+
+  <!-- Channel cards -->
+  <div class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-14">
+
+    <!-- WhatsApp -->
+    <div class="card bg-white rounded-3xl p-7 shadow-md border-t-4 border-green-500">
+      <div class="text-4xl mb-3">📱</div>
+      <div class="flex items-center gap-2 mb-1">
+        <h2 class="text-xl font-bold text-gray-900">WhatsApp</h2>
+        <span class="badge bg-green-100 text-green-700">Pääkanava</span>
+      </div>
+      <p class="text-gray-500 text-sm mb-4">Meta Business API — tuttu sovellus, ei asennusta</p>
+      <div class="space-y-2 text-sm">
+        <div class="flex gap-2"><span class="text-green-500 font-bold">→</span><span>Toimituspoikkeama-ilmoitukset</span></div>
+        <div class="flex gap-2"><span class="text-green-500 font-bold">→</span><span>Myyntiraportti kerran kuussa</span></div>
+        <div class="flex gap-2"><span class="text-green-500 font-bold">→</span><span>Reklamaatiopyynnöt</span></div>
+        <div class="flex gap-2"><span class="text-green-500 font-bold">→</span><span>Hyllysaatavuushälytykset</span></div>
+      </div>
+      <div class="mt-5 pt-4 border-t border-gray-100">
+        <div class="text-xs text-gray-400 font-semibold uppercase mb-1">Kohderyhmä</div>
+        <p class="text-sm text-gray-700">Kaikki toimittajat — erityisesti pienet, ei-tekniset</p>
+      </div>
+    </div>
+
+    <!-- Telegram -->
+    <div class="card bg-white rounded-3xl p-7 shadow-md border-t-4 border-blue-400">
+      <div class="text-4xl mb-3">✈️</div>
+      <div class="flex items-center gap-2 mb-1">
+        <h2 class="text-xl font-bold text-gray-900">Telegram</h2>
+        <span class="badge bg-blue-100 text-blue-700">Varakanava</span>
+      </div>
+      <p class="text-gray-500 text-sm mb-4">Bot API — nopea käyttöönotto, ryhmäkanavat</p>
+      <div class="space-y-2 text-sm">
+        <div class="flex gap-2"><span class="text-blue-400 font-bold">→</span><span>Samat toiminnot kuin WhatsApp</span></div>
+        <div class="flex gap-2"><span class="text-blue-400 font-bold">→</span><span>Ryhmähälytykset usealle henkilölle</span></div>
+        <div class="flex gap-2"><span class="text-blue-400 font-bold">→</span><span>Automaattiviestit ja bottikomennot</span></div>
+      </div>
+      <div class="mt-5 pt-4 border-t border-gray-100">
+        <div class="text-xs text-gray-400 font-semibold uppercase mb-1">Kohderyhmä</div>
+        <p class="text-sm text-gray-700">Toimittajat jotka eivät käytä WhatsAppia; kehittäjät</p>
+      </div>
+    </div>
+
+    <!-- Web-portaali -->
+    <div class="card bg-white rounded-3xl p-7 shadow-md border-t-4 border-indigo-500">
+      <div class="text-4xl mb-3">🌐</div>
+      <div class="flex items-center gap-2 mb-1">
+        <h2 class="text-xl font-bold text-gray-900">Web-portaali</h2>
+        <span class="badge bg-indigo-100 text-indigo-700">Itsepalvelu</span>
+      </div>
+      <p class="text-gray-500 text-sm mb-4">Next.js · Cognito SSO — selain, ei asennusta</p>
+      <div class="space-y-2 text-sm">
+        <div class="flex gap-2"><span class="text-indigo-500 font-bold">→</span><span>Toimitusten hallintanäkymä</span></div>
+        <div class="flex gap-2"><span class="text-indigo-500 font-bold">→</span><span>Laskujen seuranta</span></div>
+        <div class="flex gap-2"><span class="text-indigo-500 font-bold">→</span><span>Reklamaatiohistoria</span></div>
+        <div class="flex gap-2"><span class="text-indigo-500 font-bold">→</span><span>AI-chat selaimessa</span></div>
+      </div>
+      <div class="mt-5 pt-4 border-t border-gray-100">
+        <div class="text-xs text-gray-400 font-semibold uppercase mb-1">Kohderyhmä</div>
+        <p class="text-sm text-gray-700">Toimittajat joilla tietokone käytössä; koko henkilöstö</p>
+      </div>
+    </div>
+
+    <!-- Superset / Analytiikka -->
+    <div class="card bg-white rounded-3xl p-7 shadow-md border-t-4 border-orange-400">
+      <div class="text-4xl mb-3">📊</div>
+      <div class="flex items-center gap-2 mb-1">
+        <h2 class="text-xl font-bold text-gray-900">Analytiikka</h2>
+        <span class="badge bg-orange-100 text-orange-700">Raportit</span>
+      </div>
+      <p class="text-gray-500 text-sm mb-4">Apache Superset · Snowflake — valmiit raporttipohjat</p>
+      <div class="space-y-2 text-sm">
+        <div class="flex gap-2"><span class="text-orange-400 font-bold">→</span><span>Myynti- ja menekkiraportit</span></div>
+        <div class="flex gap-2"><span class="text-orange-400 font-bold">→</span><span>OSA-seuranta ja hyllysaatavuus</span></div>
+        <div class="flex gap-2"><span class="text-orange-400 font-bold">→</span><span>Ennusteet ja benchmarkit</span></div>
+        <div class="flex gap-2"><span class="text-orange-400 font-bold">→</span><span>Omat raportit ja tallennukset</span></div>
+      </div>
+      <div class="mt-5 pt-4 border-t border-gray-100">
+        <div class="text-xs text-gray-400 font-semibold uppercase mb-1">Kohderyhmä</div>
+        <p class="text-sm text-gray-700">Toimittajat joilla analytiikkatarve; johto ja myynti</p>
+      </div>
+    </div>
+
+    <!-- MCP -->
+    <div class="card bg-white rounded-3xl p-7 shadow-md border-t-4 border-teal-500">
+      <div class="text-4xl mb-3">🤖</div>
+      <div class="flex items-center gap-2 mb-1">
+        <h2 class="text-xl font-bold text-gray-900">MCP Access</h2>
+        <span class="badge bg-teal-100 text-teal-700">AI-työkalut</span>
+      </div>
+      <p class="text-gray-500 text-sm mb-4">Model Context Protocol — ulkoiset AI-clientit käyttävät suoraan</p>
+      <div class="space-y-2 text-sm">
+        <div class="flex gap-2"><span class="text-teal-500 font-bold">→</span><span>Claude / GPT-asiakassovellukset</span></div>
+        <div class="flex gap-2"><span class="text-teal-500 font-bold">→</span><span>Omat AI-työnkulut ja automatisointi</span></div>
+        <div class="flex gap-2"><span class="text-teal-500 font-bold">→</span><span>Suora tool-kutsu: get_sales, get_deliveries</span></div>
+        <div class="flex gap-2"><span class="text-teal-500 font-bold">→</span><span>API-avain + OAuth2</span></div>
+      </div>
+      <div class="mt-5 pt-4 border-t border-gray-100">
+        <div class="text-xs text-gray-400 font-semibold uppercase mb-1">Kohderyhmä</div>
+        <p class="text-sm text-gray-700">Tekniset toimittajat, kehittäjät, data-analyytikot</p>
+      </div>
+    </div>
+
+    <!-- A2A -->
+    <div class="card bg-white rounded-3xl p-7 shadow-md border-t-4 border-purple-500">
+      <div class="text-4xl mb-3">⚡</div>
+      <div class="flex items-center gap-2 mb-1">
+        <h2 class="text-xl font-bold text-gray-900">A2A Access</h2>
+        <span class="badge bg-purple-100 text-purple-700">Agentti→Agentti</span>
+      </div>
+      <p class="text-gray-500 text-sm mb-4">Agent-to-Agent Gateway — koneelta koneelle ilman ihmistä</p>
+      <div class="space-y-2 text-sm">
+        <div class="flex gap-2"><span class="text-purple-500 font-bold">→</span><span>ERP-järjestelmien automaatio</span></div>
+        <div class="flex gap-2"><span class="text-purple-500 font-bold">→</span><span>Toimittajan oma AI-agentti kutsuu</span></div>
+        <div class="flex gap-2"><span class="text-purple-500 font-bold">→</span><span>Reaaliaikaiset tilauskyselyt</span></div>
+        <div class="flex gap-2"><span class="text-purple-500 font-bold">→</span><span>Webhook-pohjaiset tapahtumat</span></div>
+      </div>
+      <div class="mt-5 pt-4 border-t border-gray-100">
+        <div class="text-xs text-gray-400 font-semibold uppercase mb-1">Kohderyhmä</div>
+        <p class="text-sm text-gray-700">Suuret toimittajat, yritysasiakkaat, integraatiot</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom flow -->
+  <div class="max-w-4xl mx-auto mb-14">
+    <div class="bg-white rounded-3xl shadow-md p-8">
+      <h3 class="text-lg font-bold text-gray-800 mb-6 text-center">Kaikki kanavat — yksi AI-ydin</h3>
+      <div class="flex flex-wrap items-center justify-center gap-3 text-sm">
+        <div class="bg-green-100 text-green-800 rounded-xl px-4 py-2 font-semibold">📱 WhatsApp</div>
+        <div class="bg-blue-100 text-blue-800 rounded-xl px-4 py-2 font-semibold">✈️ Telegram</div>
+        <div class="bg-indigo-100 text-indigo-800 rounded-xl px-4 py-2 font-semibold">🌐 Web</div>
+        <div class="bg-orange-100 text-orange-800 rounded-xl px-4 py-2 font-semibold">📊 Analytiikka</div>
+        <div class="bg-teal-100 text-teal-800 rounded-xl px-4 py-2 font-semibold">🤖 MCP</div>
+        <div class="bg-purple-100 text-purple-800 rounded-xl px-4 py-2 font-semibold">⚡ A2A</div>
+        <div class="arrow px-2">→</div>
+        <div class="bg-gray-900 text-white rounded-xl px-5 py-2 font-bold">🧠 Bedrock Agent</div>
+        <div class="arrow px-2">→</div>
+        <div class="bg-blue-900 text-blue-100 rounded-xl px-4 py-2 font-semibold">❄️ S-ryhmä Data</div>
+      </div>
+      <p class="text-center text-gray-400 text-xs mt-5">Cognito SSO · AWS API Gateway · Lambda · Snowflake · Confluent Kafka · SAP BTP</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="bg-gray-900 text-gray-400 text-center py-6 text-xs">
+    <p>Pientuottajat AI · <a href="https://github.com/sivonsam/pientuottajat_AI" class="text-green-400 hover:underline">GitHub</a> · AWS eu-west-1 · Luottamuksellinen</p>
+  </div>
+
+</body>
+</html>
