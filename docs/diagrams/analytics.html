@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pientuottajat AI — Analytiikkaratkaisu</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, 'Segoe UI', sans-serif; background: #f0f4f8; color: #1a202c; }
+
+    .hero {
+      background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+      color: white;
+      padding: 40px 24px 32px;
+      text-align: center;
+    }
+    .hero h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
+    .hero p { color: #a0aec0; margin-top: 8px; font-size: 14px; }
+    .hero-tags { display: flex; justify-content: center; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+    .hero-tag { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 99px; padding: 4px 14px; font-size: 12px; color: #e2e8f0; }
+
+    .back { display: inline-block; margin: 16px 24px 0; font-size: 12px; color: #4a5568; text-decoration: none; }
+    .back:hover { color: #2b6cb0; }
+
+    .section { max-width: 1100px; margin: 0 auto; padding: 32px 24px 0; }
+    .section-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+    .section-sub { font-size: 13px; color: #718096; margin-bottom: 20px; }
+
+    .grid { display: grid; gap: 16px; }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+
+    /* Cards */
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 20px;
+      border: 1.5px solid #e2e8f0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .card-icon { font-size: 28px; margin-bottom: 8px; }
+    .card-title { font-size: 14px; font-weight: 700; line-height: 1.3; margin-bottom: 6px; }
+    .card-body { font-size: 12px; color: #4a5568; line-height: 1.6; }
+    .card-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+    .tag { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 99px; }
+
+    /* Colour themes */
+    .t-blue  { border-color: #bee3f8; } .t-blue  .card-title { color: #2b6cb0; } .tag-blue  { background: #ebf8ff; color: #2b6cb0; }
+    .t-green { border-color: #c6f6d5; } .t-green .card-title { color: #276749; } .tag-green { background: #f0fff4; color: #276749; }
+    .t-teal  { border-color: #b2f5ea; } .t-teal  .card-title { color: #234e52; } .tag-teal  { background: #e6fffa; color: #234e52; }
+    .t-purple{ border-color: #e9d8fd; } .t-purple.card-title { color: #553c9a; } .tag-purple{ background: #faf5ff; color: #553c9a; }
+    .t-orange{ border-color: #feebc8; } .t-orange .card-title { color: #c05621; } .tag-orange{ background: #fffaf0; color: #c05621; }
+    .t-dark  { background: #2d3748; border-color: #4a5568; color: white; }
+    .t-dark .card-title { color: #f7fafc; }
+    .t-dark .card-body  { color: #a0aec0; }
+    .tag-dark { background: #4a5568; color: #e2e8f0; }
+
+    /* Role table */
+    table { width: 100%; border-collapse: collapse; font-size: 13px; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+    th { background: #2d3748; color: #e2e8f0; padding: 10px 14px; text-align: left; font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase; }
+    td { padding: 10px 14px; border-bottom: 1px solid #edf2f7; color: #4a5568; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f7fafc; }
+    .check { color: #38a169; font-weight: 700; }
+    .cross { color: #e53e3e; }
+    .partial { color: #d69e2e; }
+
+    /* Flow */
+    .flow { display: flex; align-items: center; gap: 0; flex-wrap: wrap; margin: 20px 0; }
+    .flow-step { background: white; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 10px 16px; font-size: 12px; font-weight: 600; color: #2d3748; white-space: nowrap; }
+    .flow-arrow { font-size: 18px; color: #a0aec0; padding: 0 6px; }
+
+    /* Template mockup */
+    .template-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .template-card {
+      background: white;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      cursor: pointer;
+      transition: box-shadow 0.15s;
+    }
+    .template-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+    .template-header { padding: 12px 14px 8px; border-bottom: 1px solid #f0f4f8; }
+    .template-title { font-size: 13px; font-weight: 700; color: #1a202c; }
+    .template-desc { font-size: 11px; color: #718096; margin-top: 2px; }
+    .template-preview { padding: 10px 14px; height: 80px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .bar { border-radius: 3px 3px 0 0; width: 18px; align-self: flex-end; }
+    .mini-chart { display: flex; align-items: flex-end; gap: 4px; height: 50px; }
+    .template-footer { padding: 8px 14px; background: #f7fafc; display: flex; justify-content: space-between; align-items: center; }
+    .template-tag { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 99px; }
+    .btn-clone { font-size: 10px; font-weight: 600; color: #2b6cb0; background: #ebf8ff; border: none; border-radius: 99px; padding: 3px 10px; cursor: pointer; }
+
+    /* Donut placeholder */
+    .donut { width: 48px; height: 48px; border-radius: 50%; border: 8px solid #e2e8f0; border-top-color: #38a169; border-right-color: #3182ce; }
+    .spark { width: 80px; height: 30px; border-bottom: 2px solid #38a169; border-left: 2px solid #e2e8f0; position: relative; }
+
+    .footer { text-align: center; font-size: 12px; color: #a0aec0; padding: 40px 0 32px; }
+    .footer a { color: #4a5568; }
+
+    @media (max-width: 700px) {
+      .grid-3, .grid-4, .template-grid { grid-template-columns: 1fr 1fr; }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>📊 Analytiikkaratkaisu toimittajille</h1>
+  <p>Valmiit pohjat · Oma workspace · Automaattiset raportit · AI-insight</p>
+  <div class="hero-tags">
+    <span class="hero-tag">Apache Superset</span>
+    <span class="hero-tag">Apache 2.0 — lisenssivapaa</span>
+    <span class="hero-tag">AWS Fargate</span>
+    <span class="hero-tag">Snowflake / S-Data</span>
+    <span class="hero-tag">Cognito SSO</span>
+  </div>
+</div>
+
+<a href="architecture-visual.html" class="back">← Takaisin arkkitehtuurikuvaan</a>
+
+<!-- TEMPLATE LIBRARY -->
+<div class="section" style="margin-top:24px">
+  <div class="section-title">📚 Valmiit raporttipohjat — Vivictan tarjoamat</div>
+  <div class="section-sub">Toimittaja kirjautuu sisään ja löytää heti käyttövalmiit pohjat. Jokainen pohja suodattuu automaattisesti vain omaan dataan.</div>
+  <div class="template-grid">
+
+    <div class="template-card">
+      <div class="template-header">
+        <div class="template-title">📈 Myyntiraportti</div>
+        <div class="template-desc">Viikko · Kuukausi · Kvartaali</div>
+      </div>
+      <div class="template-preview">
+        <div class="mini-chart">
+          <div class="bar" style="height:30px;background:#bee3f8"></div>
+          <div class="bar" style="height:42px;background:#90cdf4"></div>
+          <div class="bar" style="height:35px;background:#63b3ed"></div>
+          <div class="bar" style="height:55px;background:#3182ce"></div>
+          <div class="bar" style="height:48px;background:#2b6cb0"></div>
+          <div class="bar" style="height:60px;background:#2c5282"></div>
+        </div>
+        <div style="font-size:11px;color:#718096;margin-left:8px">Myynti €<br>vs. kategoria</div>
+      </div>
+      <div class="template-footer">
+        <span class="template-tag" style="background:#ebf8ff;color:#2b6cb0">Valmis pohja</span>
+        <button class="btn-clone">Kloonaa omaksi</button>
+      </div>
+    </div>
+
+    <div class="template-card">
+      <div class="template-header">
+        <div class="template-title">🏪 Hyllysaatavuus (OSA)</div>
+        <div class="template-desc">Per kauppa · Per tuote</div>
+      </div>
+      <div class="template-preview">
+        <div class="donut"></div>
+        <div style="font-size:11px;color:#718096;margin-left:10px">OSA % nyt<br>vs. tavoite 92%</div>
+      </div>
+      <div class="template-footer">
+        <span class="template-tag" style="background:#ebf8ff;color:#2b6cb0">Valmis pohja</span>
+        <button class="btn-clone">Kloonaa omaksi</button>
+      </div>
+    </div>
+
+    <div class="template-card">
+      <div class="template-header">
+        <div class="template-title">🗑️ Hävikkiseuranta</div>
+        <div class="template-desc">Hävikki % · € · Kategoriabenchmark</div>
+      </div>
+      <div class="template-preview">
+        <div class="mini-chart">
+          <div class="bar" style="height:20px;background:#fed7d7"></div>
+          <div class="bar" style="height:28px;background:#fc8181"></div>
+          <div class="bar" style="height:18px;background:#f56565"></div>
+          <div class="bar" style="height:35px;background:#e53e3e"></div>
+          <div class="bar" style="height:22px;background:#c53030"></div>
+        </div>
+        <div style="font-size:11px;color:#718096;margin-left:8px">Hävikki €<br>trendi 6kk</div>
+      </div>
+      <div class="template-footer">
+        <span class="template-tag" style="background:#ebf8ff;color:#2b6cb0">Valmis pohja</span>
+        <button class="btn-clone">Kloonaa omaksi</button>
+      </div>
+    </div>
+
+    <div class="template-card">
+      <div class="template-header">
+        <div class="template-title">🔮 Ennuste vs. toteuma</div>
+        <div class="template-desc">4 viikon rolling · Per SKU</div>
+      </div>
+      <div class="template-preview">
+        <div class="mini-chart">
+          <div class="bar" style="height:40px;background:#c6f6d5;border:1.5px dashed #38a169"></div>
+          <div class="bar" style="height:45px;background:#9ae6b4;border:1.5px dashed #38a169"></div>
+          <div class="bar" style="height:38px;background:#68d391"></div>
+          <div class="bar" style="height:52px;background:#48bb78"></div>
+          <div class="bar" style="height:44px;background:#38a169;opacity:0.5;border:1.5px dashed #276749"></div>
+        </div>
+        <div style="font-size:10px;color:#718096;margin-left:8px">Toteuma<br>— — Ennuste</div>
+      </div>
+      <div class="template-footer">
+        <span class="template-tag" style="background:#ebf8ff;color:#2b6cb0">Valmis pohja</span>
+        <button class="btn-clone">Kloonaa omaksi</button>
+      </div>
+    </div>
+
+    <div class="template-card">
+      <div class="template-header">
+        <div class="template-title">👥 Asiakasymmärrys</div>
+        <div class="template-desc">Penetraatio · Ostokäyttäytyminen</div>
+      </div>
+      <div class="template-preview" style="flex-direction:column;gap:4px">
+        <div style="width:100%;background:#f0f4f8;border-radius:4px;height:12px;overflow:hidden">
+          <div style="width:68%;background:#3182ce;height:100%;border-radius:4px"></div>
+        </div>
+        <div style="width:100%;background:#f0f4f8;border-radius:4px;height:12px;overflow:hidden">
+          <div style="width:43%;background:#38a169;height:100%;border-radius:4px"></div>
+        </div>
+        <div style="width:100%;background:#f0f4f8;border-radius:4px;height:12px;overflow:hidden">
+          <div style="width:81%;background:#d69e2e;height:100%;border-radius:4px"></div>
+        </div>
+        <div style="font-size:10px;color:#718096;margin-top:4px">Talouspenetraatio · Ostajakäynnit · Kanta-asiakkaat</div>
+      </div>
+      <div class="template-footer">
+        <span class="template-tag" style="background:#ebf8ff;color:#2b6cb0">Valmis pohja</span>
+        <button class="btn-clone">Kloonaa omaksi</button>
+      </div>
+    </div>
+
+    <div class="template-card">
+      <div class="template-header">
+        <div class="template-title">⚠️ Reklamaatioseuranta</div>
+        <div class="template-desc">Avoimet · Suljetut · Syyt</div>
+      </div>
+      <div class="template-preview" style="flex-direction:column;align-items:flex-start;gap:5px">
+        <div style="display:flex;align-items:center;gap:8px;font-size:11px">
+          <span style="background:#fed7d7;color:#c53030;padding:2px 8px;border-radius:99px;font-weight:700">3 avointa</span>
+          <span style="color:#718096">Viime 30pv</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:11px">
+          <span style="background:#c6f6d5;color:#276749;padding:2px 8px;border-radius:99px;font-weight:700">12 suljettu</span>
+          <span style="color:#718096">Avg 3.2pv</span>
+        </div>
+      </div>
+      <div class="template-footer">
+        <span class="template-tag" style="background:#ebf8ff;color:#2b6cb0">Valmis pohja</span>
+        <button class="btn-clone">Kloonaa omaksi</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- WORKSPACE -->
+<div class="section" style="margin-top:36px">
+  <div class="section-title">🛠️ Oma workspace — toimittaja kehittää omansa</div>
+  <div class="section-sub">Kloonaa valmispohja tai luo tyhjästä. Tallentuu omaan tilaan, näkyy vain sinulle tai tiimillesi.</div>
+  <div class="flow">
+    <div class="flow-step">📚 Valitse pohja kirjastosta</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">✏️ Muokkaa suodattimet & ajanjakso</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">➕ Lisää omia KPI-kortteja</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">💾 Tallenna omaan workspaceen</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">👥 Jaa tiimille (oma org)</div>
+  </div>
+  <div class="grid grid-3" style="margin-top:4px">
+    <div class="card t-green">
+      <div class="card-icon">🔍</div>
+      <div class="card-title">Oma suodatuslogiikka</div>
+      <div class="card-body">Valitse kaupat, tuotteet, ajanjaksot ja vertailuryhmät juuri sinulle sopiviksi. Suodattimet tallentuvat automaattisesti.</div>
+      <div class="card-tags"><span class="tag tag-green">Drag & drop</span></div>
+    </div>
+    <div class="card t-blue">
+      <div class="card-icon">📐</div>
+      <div class="card-title">Omat KPI-kortit</div>
+      <div class="card-body">Lisää laskettuja mittareita: esim. "myynti per toimitettu yksikkö", "OSA-kehitys 3kk trendi" tai mikä tahansa SQL-laskelma.</div>
+      <div class="card-tags"><span class="tag tag-blue">SQL builder</span></div>
+    </div>
+    <div class="card t-teal">
+      <div class="card-icon">🔗</div>
+      <div class="card-title">Yhdistä useita näkymiä</div>
+      <div class="card-body">Rakenna dashboard jossa myynti, saatavuus ja hävikki samalla sivulla. Tallenna eri näkymät eri käyttötarkoituksiin.</div>
+      <div class="card-tags"><span class="tag tag-teal">Multi-chart</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ROLES -->
+<div class="section" style="margin-top:36px">
+  <div class="section-title">🔐 Roolit — mitä kukin voi tehdä</div>
+  <div class="section-sub">Cognito SSO + Superset RBAC. Toimittajakohtainen Row-Level Security takaa että jokainen näkee vain oman datansa.</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Rooli</th>
+        <th>Katso valmispohjia</th>
+        <th>Kloonaa & muokkaa</th>
+        <th>Luo uusia</th>
+        <th>Jaa tiimille</th>
+        <th>Hallinnoi käyttäjiä</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Viewer</strong> — Tosipieni</td>
+        <td class="check">✔</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td>
+      </tr>
+      <tr>
+        <td><strong>Explorer</strong> — Pieni</td>
+        <td class="check">✔</td><td class="check">✔</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td>
+      </tr>
+      <tr>
+        <td><strong>Builder</strong> — Keskisuuri</td>
+        <td class="check">✔</td><td class="check">✔</td><td class="check">✔</td><td class="check">✔</td><td class="cross">✗</td>
+      </tr>
+      <tr>
+        <td><strong>Org Admin</strong> — IT-vastaava</td>
+        <td class="check">✔</td><td class="check">✔</td><td class="check">✔</td><td class="check">✔</td><td class="check">✔</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- SCHEDULED REPORTS -->
+<div class="section" style="margin-top:36px">
+  <div class="section-title">⏰ Automaattiset raportit</div>
+  <div class="section-sub">Aseta kerran — raportti tulee sinulle sovittuna aikana WhatsAppiin, sähköpostiin tai lataa PDF itse.</div>
+  <div class="grid grid-4">
+    <div class="card t-orange">
+      <div class="card-icon">📅</div>
+      <div class="card-title">Viikkokatsaus</div>
+      <div class="card-body">Maanantai klo 7 — edellisen viikon myynti, OSA, hävikki. PDF tai WhatsApp-yhteenveto.</div>
+      <div class="card-tags"><span class="tag tag-orange">Automaattinen</span></div>
+    </div>
+    <div class="card t-orange">
+      <div class="card-icon">📆</div>
+      <div class="card-title">Kuukausiraportti</div>
+      <div class="card-body">Kuun 1. päivä — koko edellinen kuukausi, vertailu kategoriaan, trendit, poikkeamat.</div>
+      <div class="card-tags"><span class="tag tag-orange">Automaattinen</span></div>
+    </div>
+    <div class="card t-orange">
+      <div class="card-icon">🔔</div>
+      <div class="card-title">Hälytysraportti</div>
+      <div class="card-body">Heti kun OSA putoaa alle rajan tai reklamaatio saapuu — push-viesti WhatsAppiin.</div>
+      <div class="card-tags"><span class="tag tag-orange">Real-time</span></div>
+    </div>
+    <div class="card t-orange">
+      <div class="card-icon">📤</div>
+      <div class="card-title">Ad-hoc export</div>
+      <div class="card-body">Lataa mikä tahansa raportti PDF tai Excel-muodossa milloin tahansa. Lähetä tilitoimistolle.</div>
+      <div class="card-tags"><span class="tag tag-orange">Manuaalinen</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- AI INSIGHT -->
+<div class="section" style="margin-top:36px">
+  <div class="section-title">🤖 AI-insight — Bedrock analysoi automaattisesti</div>
+  <div class="section-sub">Dashboard-näkymän päällä AI kirjoittaa automaattisesti suomenkielisen tulkinnan datasta.</div>
+  <div class="grid grid-2">
+    <div class="card t-dark">
+      <div class="card-icon">💬</div>
+      <div class="card-title">Automaattinen viikkokatsaus</div>
+      <div class="card-body">
+        "Myyntisi kasvoi +8 % vs. edellinen viikko. Luomukurpitsa on kategoriasi paras myyjä tällä hetkellä.
+        ⚠️ Hävikki nousi 2,1 % → 4,6 % — tarkista toimitusväli Lahden kauppoihin.
+        💡 Ennuste viittaa sesonkipiikkiin 3 viikon päästä — harkitse +15 % toimitusmäärää."
+      </div>
+      <div class="card-tags"><span class="tag tag-dark">Nova Pro</span><span class="tag tag-dark">Suomeksi</span></div>
+    </div>
+    <div class="card t-dark">
+      <div class="card-icon">❓</div>
+      <div class="card-title">Kysy omasta datasta</div>
+      <div class="card-body">
+        Kirjoita kysymys suoraan dashboardiin:<br><br>
+        <em>"Mikä tuotteistani on heikoimmalla OSA:lla tällä hetkellä?"</em><br><br>
+        AI hakee datan, muodostaa SQL-kyselyn ja vastaa selkokielellä sekä taulukolla.
+      </div>
+      <div class="card-tags"><span class="tag tag-dark">Text-to-SQL</span><span class="tag tag-dark">MCP</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- TECHNICAL STACK -->
+<div class="section" style="margin-top:36px; padding-bottom:48px">
+  <div class="section-title">🏗️ Tekninen toteutus</div>
+  <div class="section-sub">Lisenssivapaa, AWS-natiivi, skaalautuva.</div>
+  <div class="grid grid-4">
+    <div class="card">
+      <div class="card-icon">📊</div>
+      <div class="card-title" style="color:#276749">Apache Superset</div>
+      <div class="card-body">BI-alusta. Multi-tenant, RLS, chart builder, scheduled reports. Apache 2.0.</div>
+      <div class="card-tags"><span class="tag" style="background:#f0fff4;color:#276749">Fargate</span></div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🗄️</div>
+      <div class="card-title" style="color:#553c9a">PostgreSQL RDS</div>
+      <div class="card-body">Superset metadata: dashboardit, käyttäjät, aikataulut, oikeudet. Ei toimittajadata.</div>
+      <div class="card-tags"><span class="tag" style="background:#faf5ff;color:#553c9a">AWS RDS</span></div>
+    </div>
+    <div class="card">
+      <div class="card-icon">❄️</div>
+      <div class="card-title" style="color:#2b6cb0">Snowflake / S-Data</div>
+      <div class="card-body">Kaikki toimittajadata. Superset yhdistyy yhdellä service accountilla, RLS hoitaa eristyksen.</div>
+      <div class="card-tags"><span class="tag" style="background:#ebf8ff;color:#2b6cb0">Polaris REST</span></div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔐</div>
+      <div class="card-title" style="color:#c05621">Cognito SSO</div>
+      <div class="card-body">Sama tunnus WhatsApp-bottiin, web-portaaliin ja Supersetiin. supplier_id JWT-tokenissa.</div>
+      <div class="card-tags"><span class="tag" style="background:#fffaf0;color:#c05621">OAuth2</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  Pientuottajat AI · Vivicta · AWS eu-west-1 · Tavoitetila 2025 · Luottamuksellinen<br>
+  <a href="architecture-visual.html">← Arkkitehtuurikaavio</a>
+</div>
+
+</body>
+</html>
